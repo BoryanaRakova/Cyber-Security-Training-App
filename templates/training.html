@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cybersecurity Training</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/training">Training</a>
+        <a href="/quiz">Quiz</a>
+    </nav>
+
+    <div class="container">
+        <h1>Cybersecurity Training</h1>
+
+        <div class="question-card">
+            <h3>Phishing Awareness</h3>
+            <p>Phishing is when attackers use fake emails or messages to steal personal information such as passwords or bank details.</p>
+        </div>
+
+        <div class="question-card">
+            <h3>Password Security</h3>
+            <p>Strong passwords should include uppercase letters, lowercase letters, numbers, and symbols. Avoid using common words or personal details.</p>
+        </div>
+
+        <div class="question-card">
+            <h3>Safe Browsing</h3>
+            <p>Users should check website links carefully, avoid suspicious downloads, and report unusual messages or login requests.</p>
+        </div>
+
+        <a href="/quiz">
+            <button>Start Quiz</button>
+        </a>
+    </div>
+
+</body>
+</html>

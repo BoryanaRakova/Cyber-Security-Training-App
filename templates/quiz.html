@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cybersecurity Quiz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/quiz">Quiz</a>
+    </nav>
+
+    <div class="container">
+        <h1>Cybersecurity Quiz</h1>
+        <p>Answer all questions below.</p>
+
+        <form method="POST">
+
+            {% for question in questions %}
+                {% set question_number = loop.index0 %}
+
+                <div class="question-card">
+                    <h3>{{ loop.index }}. {{ question.question }}</h3>
+
+                    {% for option in question.options %}
+                        <label>
+                            <input 
+                                type="radio" 
+                                name="question_{{ question_number }}" 
+                                value="{{ option }}" 
+                                required>
+                            {{ option }}
+                        </label>
+                        <br>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit">Submit Quiz</button>
+
+        </form>
+    </div>
+
+</body>
+</html>

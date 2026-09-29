@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/quiz">Quiz</a>
+    </nav>
+
+    <div class="container">
+        <h1>Quiz Results</h1>
+
+        <p>You scored {{ score }} out of {{ total }}.</p>
+
+        {% if score == total %}
+            <p>Excellent! You have strong cybersecurity awareness.</p>
+        {% elif score >= 2 %}
+            <p>Good attempt. You understand some important cybersecurity concepts.</p>
+        {% else %}
+            <p>You may need more practice. Review the training material and try again.</p>
+        {% endif %}
+
+        <a href="/quiz">
+            <button>Try Again</button>
+        </a>
+    </div>
+
+</body>
+</html>

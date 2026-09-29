@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="/training">Training</a>
+    <a href="/quiz">Quiz</a>
+    <a href="/logout">Logout</a>
+</nav>
+
+<div class="container">
+    <h1>Welcome, {{ username }}</h1>
+    <p>You are now logged in to the Cybersecurity Training Platform.</p>
+
+    <a href="/training"><button>Start Training</button></a>
+    <a href="/quiz"><button>Take Quiz</button></a>
+</div>
+
+</body>
+</html>
