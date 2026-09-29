@@ -1,33 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-<nav>
-    <a href="/">Home</a>
-    <a href="/training">Training</a>
-    <a href="/quiz">Quiz</a>
-    <a href="/login">Login</a>
-    <a href="/register">Register</a>
-</nav>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/training">Training</a>
+        <a href="/quiz">Quiz</a>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+    </nav>
 
-<div class="container">
-    <h1>Create Account</h1>
+    <div class="container">
+        <h1>Create Account</h1>
 
-    <form method="POST">
-        <input type="text" name="username" placeholder="Enter username" required>
-        <br><br>
+        {% if error %}
+            <p>{{ error }}</p>
+        {% endif %}
 
-        <input type="password" name="password" placeholder="Enter password" required>
-        <br><br>
+        <form method="POST">
+            <input
+                type="text"
+                name="username"
+                placeholder="Enter username"
+                required
+            >
 
-        <button type="submit">Register</button>
-    </form>
-</div>
+            <br><br>
+
+            <input
+                type="password"
+                name="password"
+                placeholder="Enter password"
+                required
+            >
+
+            <br>
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
 
 </body>
 </html>

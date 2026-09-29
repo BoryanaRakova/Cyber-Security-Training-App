@@ -62,11 +62,19 @@ def register():
             conn.commit()
             conn.close()
 
-            return redirect("/login")
+            # Send a registration confirmation to the login page
+            return render_template(
+                "login.html",
+                success="Account created successfully. Please log in."
+            )
 
         except sqlite3.IntegrityError:
             conn.close()
-            return "Username already exists."
+
+            return render_template(
+                "register.html",
+                error="Username already exists. Please choose another username."
+            )
 
     return render_template("register.html")
 
@@ -96,7 +104,10 @@ def login():
             return redirect("/dashboard")
 
         else:
-            return "Invalid username or password."
+            return render_template(
+                "login.html",
+                error="Invalid username or password."
+            )
 
     return render_template("login.html")
 
