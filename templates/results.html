@@ -1,34 +1,145 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Quiz Results</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 </head>
 
 <body>
 
-    <nav>
-        <a href="/">Home</a>
-        <a href="/quiz">Quiz</a>
-    </nav>
+<nav>
+    <a href="/">Home</a>
+    <a href="/training">Training</a>
+    <a href="/quizzes">Quizzes</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/logout">Logout</a>
+</nav>
 
-    <div class="container">
-        <h1>Quiz Results</h1>
 
-        <p>You scored {{ score }} out of {{ total }}.</p>
+<div class="container">
 
-        {% if score == total %}
-            <p>Excellent! You have strong cybersecurity awareness.</p>
-        {% elif score >= 2 %}
-            <p>Good attempt. You understand some important cybersecurity concepts.</p>
+    <h1>Quiz Results</h1>
+
+    <h2>{{ quiz_name }}</h2>
+
+
+    <div class="question-card">
+
+        <h2>Your Score</h2>
+
+        <p>
+            You scored
+            <strong>{{ score }} out of {{ total }}</strong>
+            ({{ "%.0f"|format(percentage) }}%).
+        </p>
+
+
+        {% if percentage >= 90 %}
+
+            <p>
+                Excellent result! You have demonstrated a strong
+                understanding of this topic.
+            </p>
+
+        {% elif percentage >= 70 %}
+
+            <p>
+                Good attempt. Review the feedback below to strengthen
+                your understanding.
+            </p>
+
         {% else %}
-            <p>You may need more practice. Review the training material and try again.</p>
+
+            <p>
+                Review the explanations below and try the quiz again
+                when you are ready.
+            </p>
+
         {% endif %}
 
-        <a href="/quiz">
-            <button>Try Again</button>
-        </a>
     </div>
+
+
+    <h2>Question Feedback</h2>
+
+    <p>
+        Review your answers and the explanations below.
+        This will help you understand any mistakes before trying again.
+    </p>
+
+
+    {% for item in feedback %}
+
+    <div class="question-card">
+
+        <h2>Question {{ item.question_number }}</h2>
+
+        <p>
+            <strong>{{ item.question }}</strong>
+        </p>
+
+
+        {% if item.is_correct %}
+
+            <p>
+                <strong>Correct</strong>
+            </p>
+
+            <p>
+                <strong>Your answer:</strong>
+                {{ item.selected_answer }}
+            </p>
+
+        {% else %}
+
+            <p>
+                <strong>Incorrect</strong>
+            </p>
+
+            <p>
+                <strong>Your answer:</strong>
+                {{ item.selected_answer }}
+            </p>
+
+            <p>
+                <strong>Correct answer:</strong>
+                {{ item.correct_answer }}
+            </p>
+
+        {% endif %}
+
+
+        <p>
+            <strong>Explanation:</strong>
+            {{ item.explanation }}
+        </p>
+
+    </div>
+
+    {% endfor %}
+
+
+    <a href="{{ retry_url }}">
+        <button>Try Again</button>
+    </a>
+
+    <a href="/quizzes">
+        <button>Back to Quiz Centre</button>
+    </a>
+
+    <a href="/dashboard">
+        <button>View Dashboard</button>
+    </a>
+
+</div>
+
 
 </body>
 </html>

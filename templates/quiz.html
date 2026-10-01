@@ -1,47 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Cybersecurity Quiz</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ quiz_name }} Quiz</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 </head>
 
 <body>
 
-    <nav>
-        <a href="/">Home</a>
-        <a href="/quiz">Quiz</a>
-    </nav>
+<nav>
+    <a href="/">Home</a>
+    <a href="/training">Training</a>
+    <a href="/quizzes">Quizzes</a>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/logout">Logout</a>
+</nav>
 
-    <div class="container">
-        <h1>Cybersecurity Quiz</h1>
-        <p>Answer all questions below.</p>
 
-        <form method="POST">
+<div class="container">
 
-            {% for question in questions %}
-                {% set question_number = loop.index0 %}
+    <h1>{{ quiz_name }}</h1>
 
-                <div class="question-card">
-                    <h3>{{ loop.index }}. {{ question.question }}</h3>
+    <p>
+        Answer all {{ questions|length }} questions below and submit
+        your answers to see your result.
+    </p>
 
-                    {% for option in question.options %}
-                        <label>
-                            <input 
-                                type="radio" 
-                                name="question_{{ question_number }}" 
-                                value="{{ option }}" 
-                                required>
-                            {{ option }}
-                        </label>
-                        <br>
-                    {% endfor %}
-                </div>
+
+    <form method="POST">
+
+        {% for question in questions %}
+
+        <div class="question-card">
+
+            <h2>Question {{ loop.index }}</h2>
+
+            <p>
+                <strong>{{ question.question }}</strong>
+            </p>
+
+            {% set question_index = loop.index0 %}
+
+
+            {% for option in question.options %}
+
+            <label>
+
+                <input
+                    type="radio"
+                    name="question_{{ question_index }}"
+                    value="{{ option }}"
+                    required
+                >
+
+                {{ option }}
+
+            </label>
+
+            <br><br>
+
             {% endfor %}
 
-            <button type="submit">Submit Quiz</button>
+        </div>
 
-        </form>
-    </div>
+        {% endfor %}
+
+
+        <button type="submit">
+            Submit Quiz
+        </button>
+
+    </form>
+
+</div>
+
 
 </body>
 </html>

@@ -1,8 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 </head>
 
 <body>
@@ -10,17 +17,115 @@
 <nav>
     <a href="/">Home</a>
     <a href="/training">Training</a>
-    <a href="/quiz">Quiz</a>
+    <a href="/quizzes">Quizzes</a>
+    <a href="/dashboard">Dashboard</a>
     <a href="/logout">Logout</a>
 </nav>
 
-<div class="container">
-    <h1>Welcome, {{ username }}</h1>
-    <p>You are now logged in to the Cybersecurity Training Platform.</p>
 
-    <a href="/training"><button>Start Training</button></a>
-    <a href="/quiz"><button>Take Quiz</button></a>
+<div class="container">
+
+    <h1>Dashboard</h1>
+
+    <h2>Welcome, {{ username }}</h2>
+
+    <p>
+        Track your progress across the cybersecurity awareness quizzes.
+    </p>
+
+
+    <div class="question-card">
+
+        <h2>Your Progress</h2>
+
+        <p>
+            <strong>Quizzes Completed:</strong>
+            {{ completed_quizzes }} / {{ total_quizzes }}
+        </p>
+
+        {% if overall_percentage is not none %}
+
+            <p>
+                <strong>Overall Best Score:</strong>
+                {{ total_best_points }} / {{ total_available_points }}
+            </p>
+
+            <p>
+                <strong>Overall Percentage:</strong>
+                {{ "%.0f"|format(overall_percentage) }}%
+            </p>
+
+        {% else %}
+
+            <p>
+                <strong>Overall Best Score:</strong>
+                Not completed
+            </p>
+
+            <p>
+                <strong>Overall Percentage:</strong>
+                Complete all quizzes to calculate your overall result.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <h2>Quiz Progress</h2>
+
+
+    {% for quiz in quiz_progress %}
+
+    <div class="question-card">
+
+        <h2>{{ quiz.quiz_name }}</h2>
+
+        {% if quiz.best_percentage is not none %}
+
+            <p>
+                <strong>Best Score:</strong>
+                {{ "%.0f"|format(quiz.best_percentage) }}%
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                Completed
+            </p>
+
+            <a href="/quiz/{{ quiz.quiz_id }}">
+                <button>Try Again</button>
+            </a>
+
+        {% else %}
+
+            <p>
+                <strong>Best Score:</strong>
+                Not completed
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                Not completed
+            </p>
+
+            <a href="/quiz/{{ quiz.quiz_id }}">
+                <button>Start Quiz</button>
+            </a>
+
+        {% endif %}
+
+    </div>
+
+    {% endfor %}
+
+
+    <a href="/quizzes">
+        <button>Go to Quiz Centre</button>
+    </a>
+
 </div>
+
 
 </body>
 </html>
