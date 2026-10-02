@@ -1,8 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Cybersecurity Training</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 </head>
 
 <body>
@@ -15,164 +22,235 @@
     <a href="/logout">Logout</a>
 </nav>
 
-<div class="container">
+
+<div class="container training-container">
 
     <h1>Cybersecurity Training</h1>
 
     <p>
-        Complete the training topics below before taking the cybersecurity quiz.
-        These topics will help you recognise common cyber threats and use safer
-        online practices.
+        Review the training topics below before completing the cybersecurity
+        quizzes. These topics will help you recognise common cyber threats
+        and use safer online practices.
     </p>
 
-    <div class="question-card">
-        <h2>1. Phishing Awareness</h2>
 
-        <p>
-            Phishing is a cyberattack where criminals use fake emails,
-            messages or websites to trick people into revealing sensitive
-            information such as passwords, banking details or personal
-            information.
-        </p>
+    <div class="training-grid">
 
-        <p>
-            A common warning sign of phishing is an unexpected request for
-            personal information. Phishing messages may also contain suspicious
-            links, unexpected attachments or requests asking you to act quickly.
-        </p>
+        <div class="training-card">
+            <h2>1. Phishing Awareness</h2>
 
-        <p>
-            If you receive a suspicious email or link, do not click it or
-            provide personal information. Ignore the message or report it
-            through the appropriate security channel.
-        </p>
+            <p>
+                Phishing is a cyberattack where criminals use fake emails,
+                messages or websites to trick people into revealing sensitive
+                information such as passwords, banking details or personal
+                information.
+            </p>
+
+            <p>
+                Warning signs can include unexpected requests for personal
+                information, suspicious links, unusual attachments and
+                messages that create urgency.
+            </p>
+
+            <p>
+                Avoid clicking suspicious links and verify unexpected
+                requests before providing sensitive information.
+            </p>
+        </div>
+
+
+        <div class="training-card">
+            <h2>2. Password & Account Security</h2>
+
+            <p>
+                Strong passwords help protect online accounts from
+                unauthorised access. Passwords should be difficult to guess
+                and should not contain easily identified personal information.
+            </p>
+
+            <p>
+                Different passwords should be used for different accounts.
+                This limits the damage if one password becomes compromised.
+            </p>
+
+            <p>
+                A password manager can also help users create and manage
+                different passwords securely.
+            </p>
+        </div>
+
+
+        <div class="training-card">
+            <h2>3. Multi-Factor Authentication</h2>
+
+            <p>
+                Multi-factor authentication (MFA) adds another layer of
+                security to an account by requiring additional verification
+                as well as a password.
+            </p>
+
+            <p>
+                For example, a user may be asked to confirm a login using an
+                authentication app or another verification method.
+            </p>
+
+            <p>
+                MFA can help protect an account even if its password has
+                been compromised.
+            </p>
+        </div>
+
+
+        <div class="training-card">
+            <h2>4. Social Engineering</h2>
+
+            <p>
+                Social engineering involves manipulating people into
+                revealing information or performing unsafe actions.
+            </p>
+
+            <p>
+                Attackers may impersonate trusted people or organisations and
+                use urgency, fear, curiosity or trust to influence a victim.
+            </p>
+
+            <p>
+                Unusual requests should be verified independently before
+                sensitive information is provided or an action is taken.
+            </p>
+        </div>
+
+
+        <div class="training-card">
+            <h2>5. Malware & Ransomware</h2>
+
+            <p>
+                Malware is malicious software designed to damage systems,
+                steal information or interfere with normal computer
+                operations.
+            </p>
+
+            <p>
+                Ransomware is a type of malware that can lock or encrypt data
+                and demand payment from the victim.
+            </p>
+
+            <p>
+                Avoid suspicious downloads and attachments, and keep software
+                updated to reduce the risk of malware infections.
+            </p>
+        </div>
+
+
+        <div class="training-card">
+            <h2>6. Safe Browsing & Email Security</h2>
+
+            <p>
+                Websites, links, downloads and email attachments should be
+                treated carefully, particularly when they are unexpected.
+            </p>
+
+            <p>
+                Check website addresses before entering sensitive information
+                and verify unexpected messages or attachments before opening
+                them.
+            </p>
+
+            <p>
+                Avoid downloading files from unknown or untrusted sources.
+            </p>
+        </div>
+
+
+        <div class="training-card">
+            <h2>7. Online Privacy & Personal Data</h2>
+
+            <p>
+                Personal information shared online can be used by criminals
+                for scams, impersonation and other attacks.
+            </p>
+
+            <p>
+                Users should consider what information they share publicly
+                and review the privacy settings of their online accounts.
+            </p>
+
+            <p>
+                Sensitive information such as passwords, financial details
+                and identification information should not be shared with
+                unknown or unverified people.
+            </p>
+        </div>
+
+
+        <div class="training-card">
+            <h2>8. Public Wi-Fi & Network Safety</h2>
+
+            <p>
+                Public Wi-Fi networks can present security risks because users
+                may not know who operates the network or who else is connected
+                to it.
+            </p>
+
+            <p>
+                Avoid performing sensitive activities on networks that you do
+                not trust, particularly when entering passwords or financial
+                information.
+            </p>
+
+            <p>
+                Check that you are connecting to the correct network and use
+                trusted connections when handling sensitive information.
+            </p>
+        </div>
+
+
+        <div class="training-card">
+            <h2>9. Device & Software Security</h2>
+
+            <p>
+                Keeping devices and software secure reduces the risk of
+                attackers exploiting known security weaknesses.
+            </p>
+
+            <p>
+                Operating systems, applications and security software should
+                be kept updated when security updates become available.
+            </p>
+
+            <p>
+                Devices should also be protected with appropriate access
+                controls, such as a password, PIN or other secure locking
+                method.
+            </p>
+        </div>
+
     </div>
 
 
-    <div class="question-card">
-        <h2>2. Password Security</h2>
+    <div class="training-ready">
+
+        <h2>Ready to Test Your Knowledge?</h2>
 
         <p>
-            Strong passwords help protect online accounts from unauthorised
-            access. A strong password should be difficult to guess and can
-            include uppercase and lowercase letters, numbers and special
-            characters.
+            After reviewing the training topics, visit the Quiz Centre
+            and choose a cybersecurity quiz.
         </p>
 
-        <p>
-            Avoid simple passwords such as "password123", common words,
-            usernames or personal information that could be guessed easily.
-        </p>
+        <a href="/quizzes">
+            <button>Go to Quiz Centre</button>
+        </a>
 
-        <p>
-            You should also use different passwords for different accounts.
-            If one password becomes compromised, using unique passwords limits
-            the damage because attackers cannot use the same password to access
-            all of your other accounts.
-        </p>
     </div>
-
-
-    <div class="question-card">
-        <h2>3. Multi-Factor Authentication (MFA)</h2>
-
-        <p>
-            Multi-factor authentication provides an additional layer of
-            security when logging into an account.
-        </p>
-
-        <p>
-            Instead of relying only on a password, MFA requires another method
-            of verification. For example, this could be a security code,
-            authentication application or another verification method.
-        </p>
-
-        <p>
-            This makes an account more difficult for an attacker to access,
-            even if the password has been compromised.
-        </p>
-    </div>
-
-
-    <div class="question-card">
-        <h2>4. Safe Browsing and Email Attachments</h2>
-
-        <p>
-            Before entering sensitive information on a website, check the
-            website address carefully and make sure it is legitimate.
-            Cybercriminals may create fake websites that look similar to
-            genuine websites in order to steal information.
-        </p>
-
-        <p>
-            You should also be careful with unexpected email attachments.
-            Malicious attachments may contain harmful software.
-        </p>
-
-        <p>
-            If you receive an unexpected attachment, verify the sender and
-            the attachment before opening it. Do not disable security software
-            or open an attachment simply because it appears to come from
-            someone you recognise.
-        </p>
-    </div>
-
-
-    <div class="question-card">
-        <h2>5. Social Engineering</h2>
-
-        <p>
-            Social engineering is the manipulation of people into revealing
-            information or performing unsafe actions.
-        </p>
-
-        <p>
-            Attackers may pretend to be trusted people or organisations and
-            attempt to create urgency, fear or curiosity. Their aim may be to
-            persuade someone to reveal a password, provide personal information,
-            click a malicious link or open an unsafe attachment.
-        </p>
-
-        <p>
-            Always verify unusual or unexpected requests before providing
-            sensitive information or taking an action.
-        </p>
-    </div>
-
-
-    <div class="question-card">
-        <h2>6. Malware and Ransomware</h2>
-
-        <p>
-            Malware is malicious software designed to harm systems, steal
-            information or interfere with normal computer operations.
-        </p>
-
-        <p>
-            Ransomware is a type of malware that can lock or encrypt data and
-            demand payment from the victim.
-        </p>
-
-        <p>
-            To reduce the risk, avoid suspicious downloads and unexpected
-            attachments, keep software updated and follow safe browsing
-            practices.
-        </p>
-    </div>
-
-
-    <h2>Ready to Test Your Knowledge?</h2>
-
-    <p>
-        After reviewing the training topics, complete the 10-question
-        cybersecurity awareness quiz.
-    </p>
-
-    <a href="/quizzes">
-        <button>Start Quiz</button>
-    </a>
 
 </div>
+
+
+<footer>
+    <p>Cybersecurity Awareness and Training Application</p>
+    <p>Developed as part of the COM6301 Development Project</p>
+</footer>
+
 
 </body>
 </html>

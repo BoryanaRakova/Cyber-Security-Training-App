@@ -12,6 +12,8 @@
     >
 </head>
 
+
+
 <body>
 
 <nav>
@@ -75,49 +77,53 @@
     <h2>Quiz Progress</h2>
 
 
-    {% for quiz in quiz_progress %}
+    <div class="dashboard-grid">
 
-    <div class="question-card">
+        {% for quiz in quiz_progress %}
 
-        <h2>{{ quiz.quiz_name }}</h2>
+        <div class="dashboard-card">
 
-        {% if quiz.best_percentage is not none %}
+            <h2>{{ quiz.quiz_name }}</h2>
 
-            <p>
-                <strong>Best Score:</strong>
-                {{ "%.0f"|format(quiz.best_percentage) }}%
-            </p>
+            {% if quiz.best_percentage is not none %}
 
-            <p>
-                <strong>Status:</strong>
-                Completed
-            </p>
+                <p>
+                    <strong>Best Score:</strong>
+                    {{ "%.0f"|format(quiz.best_percentage) }}%
+                </p>
 
-            <a href="/quiz/{{ quiz.quiz_id }}">
-                <button>Try Again</button>
-            </a>
+                <p>
+                    <strong>Status:</strong>
+                    Completed
+                </p>
 
-        {% else %}
+                <a href="/quiz/{{ quiz.quiz_id }}">
+                    <button>Try Again</button>
+                </a>
 
-            <p>
-                <strong>Best Score:</strong>
-                Not completed
-            </p>
+            {% else %}
 
-            <p>
-                <strong>Status:</strong>
-                Not completed
-            </p>
+                <p>
+                    <strong>Best Score:</strong>
+                    Not completed
+                </p>
 
-            <a href="/quiz/{{ quiz.quiz_id }}">
-                <button>Start Quiz</button>
-            </a>
+                <p>
+                    <strong>Status:</strong>
+                    Not completed
+                </p>
 
-        {% endif %}
+                <a href="/quiz/{{ quiz.quiz_id }}">
+                    <button>Start Quiz</button>
+                </a>
+
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
 
     </div>
-
-    {% endfor %}
 
 
     <a href="/quizzes">
@@ -126,6 +132,20 @@
 
 </div>
 
+
+    
+
+</div>
+
+
+<footer>
+    <p>Cybersecurity Awareness and Training Application</p>
+    <p>Developed as part of the COM6301 Development Project</p>
+</footer>
+
+
+</body>
+</html>
 
 </body>
 </html>
