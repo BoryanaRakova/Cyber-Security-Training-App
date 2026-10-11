@@ -1,1157 +1,1762 @@
-from flask import Flask, render_template, request, redirect, session
+import os
+from dotenv import load_dotenv
+
+from flask import Flask, render_template, request, redirect, session, url_for
+
 import sqlite3
+
+from datetime import date
+
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
 app = Flask(__name__)
-app.secret_key = "cybersecurity_secret_key"
 
+load_dotenv()
+app.secret_key = os.environ["FLASK_SECRET_KEY"]
 
 # --------------------------------------------------
+
 # DATABASE
+
 # --------------------------------------------------
 
 def init_db():
+
     conn = sqlite3.connect("users.db")
+
     cursor = conn.cursor()
 
-    # Users table
     cursor.execute("""
+
         CREATE TABLE IF NOT EXISTS users (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             username TEXT UNIQUE NOT NULL,
+
             password TEXT NOT NULL
+
         )
+
     """)
 
-    # Quiz results table
     cursor.execute("""
+
         CREATE TABLE IF NOT EXISTS quiz_results (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             username TEXT NOT NULL,
+
             score INTEGER NOT NULL,
+
             total INTEGER NOT NULL,
+
             percentage REAL NOT NULL,
+
             date_taken TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
             quiz_name TEXT DEFAULT 'General Cybersecurity Awareness'
+
         )
+
     """)
 
-    # Check whether quiz_name exists in an older database
     cursor.execute("PRAGMA table_info(quiz_results)")
+
     columns = [column[1] for column in cursor.fetchall()]
 
-    # Add quiz_name without deleting existing results
     if "quiz_name" not in columns:
+
         cursor.execute("""
+
             ALTER TABLE quiz_results
+
             ADD COLUMN quiz_name TEXT DEFAULT 'General Cybersecurity Awareness'
+
         """)
 
-    conn.commit()
-    conn.close()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS evaluation_feedback (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            q1 INTEGER NOT NULL,
+            q2 INTEGER NOT NULL,
+            q3 INTEGER NOT NULL,
+            q4 INTEGER NOT NULL,
+            q5 INTEGER NOT NULL,
+            q6 INTEGER NOT NULL,
+            q7 INTEGER NOT NULL,
+            q8 INTEGER NOT NULL,
+            q9 INTEGER NOT NULL,
+            q10 INTEGER NOT NULL,
+            positive_feedback TEXT,
+            improvement_feedback TEXT,
+            submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
 
+    conn.commit()
+
+    conn.close()
 
 init_db()
 
-
 # --------------------------------------------------
+
 # HOME PAGE
+
 # --------------------------------------------------
 
 @app.route("/")
+
 def home():
+
     return render_template("home.html")
 
-
 # --------------------------------------------------
+
 # TRAINING PAGE
+
 # --------------------------------------------------
 
 @app.route("/training")
+
 def training():
+
     return render_template("training.html")
 
-
 # --------------------------------------------------
+
 # REGISTER
+
 # --------------------------------------------------
 
 @app.route("/register", methods=["GET", "POST"])
+
 def register():
 
     error = None
 
     if request.method == "POST":
+
         username = request.form["username"].strip()
+
         password = request.form["password"]
 
-        # Hash password before storing it
         hashed_password = generate_password_hash(password)
 
         conn = sqlite3.connect("users.db")
+
         cursor = conn.cursor()
 
         try:
+
             cursor.execute(
+
                 "INSERT INTO users (username, password) VALUES (?, ?)",
+
                 (username, hashed_password)
+
             )
 
             conn.commit()
+
             conn.close()
 
             return redirect("/login?registered=1")
 
         except sqlite3.IntegrityError:
+
             conn.close()
+
             error = "Username already exists. Please choose another username."
 
     return render_template(
+
         "register.html",
+
         error=error
+
     )
 
-
 # --------------------------------------------------
+
 # LOGIN
+
 # --------------------------------------------------
 
 @app.route("/login", methods=["GET", "POST"])
+
 def login():
 
     error = None
+
     success = None
 
+    message = None
+
     if request.args.get("registered") == "1":
+
         success = "Account created successfully. Please log in."
 
+    if request.args.get("next") == "quizzes":
+
+        message = "Please log in to access the quizzes."
+
     if request.method == "POST":
+
         username = request.form["username"].strip()
+
         password = request.form["password"]
 
         conn = sqlite3.connect("users.db")
+
         cursor = conn.cursor()
 
         cursor.execute(
+
             "SELECT * FROM users WHERE username = ?",
+
             (username,)
+
         )
 
         user = cursor.fetchone()
+
         conn.close()
 
         if user and check_password_hash(user[2], password):
+
             session["username"] = username
+
+            if request.args.get("next") == "quizzes":
+
+                return redirect("/quizzes")
+
             return redirect("/dashboard")
 
         error = "Invalid username or password."
 
     return render_template(
+
         "login.html",
+
         error=error,
-        success=success
+
+        success=success,
+
+        message=message
+
     )
 
+# --------------------------------------------------
+
+# QUIZ QUESTION HELPER
 
 # --------------------------------------------------
-# ALL QUIZZES
+
+def make_questions(items):
+
+    return [
+
+        {
+
+            "question": question,
+
+            "options": options,
+
+            "answer": options[correct],
+
+            "explanation": explanation
+
+        }
+
+        for question, options, correct, explanation in items
+
+    ]
+
+# --------------------------------------------------
+
+# ALL NINE QUIZZES
+
 # --------------------------------------------------
 
 quizzes = {
 
-    # --------------------------------------------------
     # 1. GENERAL CYBERSECURITY AWARENESS
-    # --------------------------------------------------
 
     "general": {
+
         "name": "General Cybersecurity Awareness",
-        "questions": [
-            {
-                "question": "What is phishing?",
-                "options": [
-                    "A fake message used to steal personal information",
-                    "A type of antivirus software",
-                    "A secure password manager",
-                    "A computer backup method"
+
+        "questions": make_questions([
+
+            (
+
+                "A colleague receives an unexpected login approval request on their phone. What should they do?",
+
+                [
+
+                    "Approve it in case it is a system test",
+
+                    "Deny it and report the unexpected request",
+
+                    "Turn off notifications for the day",
+
+                    "Send their password to IT for checking"
+
                 ],
-                "answer": "A fake message used to steal personal information",
-                "explanation": (
-                    "Phishing is a cyberattack where criminals use fake "
-                    "emails, messages or websites to trick people into "
-                    "revealing sensitive information."
-                )
-            },
-            {
-                "question": "Which password is the strongest?",
-                "options": [
-                    "password123",
-                    "admin2024",
-                    "Boryana123",
-                    "T!9x#Lm2@Q"
+
+                1,
+
+                "An unexpected authentication prompt may mean someone is trying to access the account."
+
+            ),
+
+            (
+
+                "A website displays a padlock icon but its domain name is slightly different from the organisation you intended. What does this suggest?",
+
+                [
+
+                    "The padlock proves the organisation owns the site",
+
+                    "The site must be safe because it uses encryption",
+
+                    "The domain may be an impersonation and should be checked",
+
+                    "The difference is harmless if the page looks familiar"
+
                 ],
-                "answer": "T!9x#Lm2@Q",
-                "explanation": (
-                    "Strong passwords are difficult to guess and should avoid "
-                    "common words and personal information. A mixture of "
-                    "characters can make a password harder to guess."
-                )
-            },
-            {
-                "question": "What should you do if you receive a suspicious email link?",
-                "options": [
-                    "Click it to check where it goes",
-                    "Reply with your personal details",
-                    "Ignore or report it",
-                    "Forward it to friends"
+
+                2,
+
+                "HTTPS encrypts the connection but does not guarantee that the website is legitimate."
+
+            ),
+
+            (
+
+                "You discover that an online service you use has suffered a data breach. What is the most useful first response?",
+
+                [
+
+                    "Wait until someone accesses your account",
+
+                    "Change the affected password and any reused passwords",
+
+                    "Delete all browser bookmarks",
+
+                    "Turn off your device for a week"
+
                 ],
-                "answer": "Ignore or report it",
-                "explanation": (
-                    "Suspicious links may lead to phishing websites or "
-                    "malicious content. Avoid clicking them and report "
-                    "suspicious messages when appropriate."
-                )
-            },
-            {
-                "question": "What is a common warning sign of a phishing email?",
-                "options": [
-                    "An unexpected request for personal information",
-                    "A message from someone you know",
-                    "A correctly spelled company name",
-                    "An email received during working hours"
+
+                1,
+
+                "Changing compromised and reused passwords helps prevent account takeover."
+
+            ),
+
+            (
+
+                "Why should important files be backed up separately from the main device?",
+
+                [
+
+                    "Backups make all malware impossible",
+
+                    "Backups automatically stop phishing",
+
+                    "Backups remove the need for security updates",
+
+                    "Backups can help restore data after loss or ransomware"
+
                 ],
-                "answer": "An unexpected request for personal information",
-                "explanation": (
-                    "Unexpected requests for passwords, banking details or "
-                    "personal information can be warning signs of phishing."
-                )
-            },
-            {
-                "question": "Why should you use different passwords for different accounts?",
-                "options": [
-                    "It makes websites load faster",
-                    "It limits the damage if one password is compromised",
-                    "It prevents all phishing emails",
-                    "It removes the need for account security"
+
+                3,
+
+                "Separate, tested backups support recovery when original files are lost or damaged."
+
+            ),
+
+            (
+
+                "A mobile app requests access to your contacts even though it only provides a calculator. What is the best response?",
+
+                [
+
+                    "Question the permission and deny unnecessary access",
+
+                    "Allow it because apps always need every permission",
+
+                    "Share your contact list manually instead",
+
+                    "Disable your screen lock before installing"
+
                 ],
-                "answer": "It limits the damage if one password is compromised",
-                "explanation": (
-                    "Unique passwords reduce the risk of one stolen password "
-                    "being used to access several different accounts."
-                )
-            },
-            {
-                "question": "What does multi-factor authentication (MFA) provide?",
-                "options": [
-                    "An additional layer of account security",
-                    "A faster internet connection",
-                    "Automatic removal of computer viruses",
-                    "A replacement for all passwords"
+
+                0,
+
+                "Applications should receive only the permissions necessary for their purpose."
+
+            ),
+
+            (
+
+                "You find a USB drive in a shared office. What should you do?",
+
+                [
+
+                    "Connect it to identify its owner",
+
+                    "Take it home and scan it later",
+
+                    "Give it to the appropriate IT or security team without connecting it",
+
+                    "Use it only on a colleague's computer"
+
                 ],
-                "answer": "An additional layer of account security",
-                "explanation": (
-                    "MFA requires another form of verification in addition "
-                    "to a password, making unauthorised access more difficult."
-                )
-            },
-            {
-                "question": "What should you do before entering sensitive information on a website?",
-                "options": [
-                    "Check that the website address is legitimate",
-                    "Disable your antivirus software",
-                    "Download files from the website",
-                    "Share the website with other people"
+
+                2,
+
+                "Unknown USB devices can contain malicious files or hardware."
+
+            ),
+
+            (
+
+                "An online account offers a passkey sign-in option. What is a key security benefit?",
+
+                [
+
+                    "It makes your account public",
+
+                    "It can reduce reliance on passwords and resist many phishing attacks",
+
+                    "It lets you share sign-in details more easily",
+
+                    "It disables all account recovery methods"
+
                 ],
-                "answer": "Check that the website address is legitimate",
-                "explanation": (
-                    "Checking the website address can help identify fake or "
-                    "misleading websites before sensitive information is entered."
-                )
-            },
-            {
-                "question": "What is social engineering?",
-                "options": [
-                    "Manipulating people into revealing information or performing unsafe actions",
-                    "Designing social media websites",
-                    "Installing computer hardware",
-                    "Updating an operating system"
+
+                1,
+
+                "Passkeys use cryptographic authentication designed to resist credential phishing."
+
+            ),
+
+            (
+
+                "What is the best way to confirm that a software update notification is genuine?",
+
+                [
+
+                    "Install from the operating system or application's trusted update settings",
+
+                    "Use the first download link in a pop-up advertisement",
+
+                    "Ask an unknown social media account for the installer",
+
+                    "Ignore every update notification permanently"
+
                 ],
-                "answer": "Manipulating people into revealing information or performing unsafe actions",
-                "explanation": (
-                    "Social engineering uses psychological manipulation such "
-                    "as trust, urgency, fear or impersonation to influence people."
-                )
-            },
-            {
-                "question": "What is ransomware?",
-                "options": [
-                    "Malware that can lock or encrypt data and demand payment",
-                    "Software used to create strong passwords",
-                    "A secure method of backing up files",
-                    "A tool for improving internet speed"
+
+                0,
+
+                "Trusted update mechanisms reduce the risk of installing fake software updates."
+
+            ),
+
+            (
+
+                "You accidentally send a confidential document to the wrong recipient. What should you do?",
+
+                [
+
+                    "Assume the recipient will delete it",
+
+                    "Post a warning on social media",
+
+                    "Wait until the recipient complains",
+
+                    "Report the incident promptly using the organisation's procedure"
+
                 ],
-                "answer": "Malware that can lock or encrypt data and demand payment",
-                "explanation": (
-                    "Ransomware is malicious software that can prevent access "
-                    "to files or systems and then demand payment from the victim."
-                )
-            },
-            {
-                "question": "What is the safest action when you receive an unexpected attachment?",
-                "options": [
-                    "Open it immediately",
-                    "Download it and send it to someone else",
-                    "Verify the sender and the attachment before opening it",
-                    "Disable security software before opening it"
+
+                3,
+
+                "Prompt incident reporting helps limit the consequences of accidental disclosure."
+
+            ),
+
+            (
+
+                "Which statement best describes cybersecurity awareness?",
+
+                [
+
+                    "It is only the responsibility of technical staff",
+
+                    "It is a one-time activity completed after training",
+
+                    "It involves recognising risks and making safer everyday decisions",
+
+                    "It means avoiding all internet services"
+
                 ],
-                "answer": "Verify the sender and the attachment before opening it",
-                "explanation": (
-                    "Unexpected attachments may contain malicious software, "
-                    "so the sender and attachment should be verified first."
-                )
-            }
-        ]
+
+                2,
+
+                "Cybersecurity awareness means recognising threats and applying safe practices consistently."
+
+            )
+
+        ])
+
     },
 
-
-    # --------------------------------------------------
     # 2. PHISHING AWARENESS
-    # --------------------------------------------------
 
     "phishing": {
+
         "name": "Phishing Awareness",
-        "questions": [
-            {
-                "question": "What is the main purpose of a phishing attack?",
-                "options": [
-                    "To trick people into revealing sensitive information",
-                    "To improve account security",
-                    "To update a computer automatically",
-                    "To increase internet speed"
+
+        "questions": make_questions([
+
+            (
+
+                "An email says your university account will be suspended in 30 minutes unless you sign in using its link. What should you do?",
+
+                [
+
+                    "Use the link quickly to avoid suspension",
+
+                    "Open the university website independently to check your account",
+
+                    "Reply with your password to verify the sender",
+
+                    "Forward the link to classmates for testing"
+
                 ],
-                "answer": "To trick people into revealing sensitive information",
-                "explanation": (
-                    "Phishing attempts to deceive people into revealing "
-                    "passwords, account details or other sensitive information."
-                )
-            },
-            {
-                "question": "Which is a common warning sign of a phishing message?",
-                "options": [
-                    "An unexpected request for sensitive information",
-                    "A newsletter you deliberately subscribed to",
-                    "An email saved in your drafts folder",
-                    "A normal message from a friend"
+
+                1,
+
+                "Account warnings should be checked through an independently accessed official website."
+
+            ),
+
+            (
+
+                "A message appears to come from your manager, asking you to buy gift cards immediately. What is the strongest warning sign?",
+
+                [
+
+                    "The message uses your manager's first name",
+
+                    "It arrived during working hours",
+
+                    "It requests an unusual urgent purchase outside normal procedures",
+
+                    "It contains a familiar company logo"
+
                 ],
-                "answer": "An unexpected request for sensitive information",
-                "explanation": (
-                    "Unexpected requests for passwords, payment details or "
-                    "personal information should be treated with caution."
-                )
-            },
-            {
-                "question": "What should you do if you receive a suspicious link in an email?",
-                "options": [
-                    "Click it to see whether it is safe",
-                    "Avoid clicking it and verify the message independently",
-                    "Forward it to another person",
-                    "Reply with your password"
+
+                2,
+
+                "Unexpected financial requests and urgency are common signs of impersonation."
+
+            ),
+
+            (
+
+                "You hover over a link labelled 'Student Portal' and see a different, unfamiliar domain. What is the safest interpretation?",
+
+                [
+
+                    "The link destination may be deceptive and needs independent verification",
+
+                    "The visible label guarantees the destination",
+
+                    "Hovering over links automatically downloads malware",
+
+                    "An unfamiliar domain always means the message is legitimate"
+
                 ],
-                "answer": "Avoid clicking it and verify the message independently",
-                "explanation": (
-                    "Suspicious links may lead to fake or malicious websites. "
-                    "Verify the request using a trusted method instead."
-                )
-            },
-            {
-                "question": "Why might a phishing message create a sense of urgency?",
-                "options": [
-                    "To pressure the recipient into acting without thinking carefully",
-                    "To improve internet speed",
-                    "To make the email easier to read",
-                    "To protect the recipient's account"
+
+                0,
+
+                "The real destination of a link matters more than its displayed label."
+
+            ),
+
+            (
+
+                "A suspicious email contains an attachment labelled 'invoice.pdf.exe'. Why is this concerning?",
+
+                [
+
+                    "PDF files cannot be attached to emails",
+
+                    "The filename is too short",
+
+                    "All invoices are malicious",
+
+                    "The final extension indicates an executable file, not an ordinary PDF"
+
                 ],
-                "answer": "To pressure the recipient into acting without thinking carefully",
-                "explanation": (
-                    "Attackers may use urgency or fear to encourage people "
-                    "to act before checking whether a message is genuine."
-                )
-            },
-            {
-                "question": "What should you do if an email claiming to be from your bank asks you to verify your account through a link?",
-                "options": [
-                    "Click the link and enter your login details",
-                    "Reply with your account information",
-                    "Contact the bank using an official website, app or trusted contact method",
-                    "Forward the email to friends"
+
+                3,
+
+                "A double file extension can disguise an executable program as a document."
+
+            ),
+
+            (
+
+                "You entered your password into a website and then realised it was a phishing page. What should you do?",
+
+                [
+
+                    "Wait to see whether anything happens",
+
+                    "Change the password through the legitimate service and report the incident",
+
+                    "Visit the phishing page again to remove your details",
+
+                    "Use the same password on a different account"
+
                 ],
-                "answer": "Contact the bank using an official website, app or trusted contact method",
-                "explanation": (
-                    "Contact the organisation independently rather than using "
-                    "links or contact details contained in a suspicious message."
-                )
-            }
-        ]
+
+                1,
+
+                "Secure the legitimate account immediately and report the suspected compromise."
+
+            )
+
+        ])
+
     },
 
-
-    # --------------------------------------------------
     # 3. PASSWORD & ACCOUNT SECURITY
-    # --------------------------------------------------
 
     "password-security": {
+
         "name": "Password & Account Security",
-        "questions": [
-            {
-                "question": "Why is it important to use a unique password for each account?",
-                "options": [
-                    "It prevents one stolen password from compromising several accounts",
-                    "It makes websites load faster",
-                    "It removes the need for software updates",
-                    "It prevents every type of cyberattack"
+
+        "questions": make_questions([
+
+            (
+
+                "You use the same password for your email and a shopping website. The shopping website suffers a breach. What is the main risk?",
+
+                [
+
+                    "The email account may also be compromised",
+
+                    "The email account will automatically be deleted",
+
+                    "Your internet connection will stop working",
+
+                    "Your shopping history will be erased"
+
                 ],
-                "answer": "It prevents one stolen password from compromising several accounts",
-                "explanation": (
-                    "If passwords are reused, one compromised password may "
-                    "allow an attacker to access several accounts."
-                )
-            },
-            {
-                "question": "Which password is the most difficult to guess?",
-                "options": [
-                    "football123",
-                    "Password1",
-                    "London2026",
-                    "R7!qL2#vP9"
+
+                0,
+
+                "Password reuse allows attackers to try stolen credentials on other services."
+
+            ),
+
+            (
+
+                "Which approach is generally best for creating passwords?",
+
+                [
+
+                    "Use your date of birth with a symbol",
+
+                    "Use one memorable password everywhere",
+
+                    "Use long, unique passwords or passphrases, preferably managed securely",
+
+                    "Use the website name followed by 123"
+
                 ],
-                "answer": "R7!qL2#vP9",
-                "explanation": (
-                    "Passwords that are difficult to predict and do not contain "
-                    "common words or personal information are generally safer."
-                )
-            },
-            {
-                "question": "What is the purpose of multi-factor authentication?",
-                "options": [
-                    "To require an additional form of verification",
-                    "To make passwords visible",
-                    "To disable account security",
-                    "To automatically share login details"
+
+                2,
+
+                "Long, unique passwords are harder to compromise. Password managers can help."
+
+            ),
+
+            (
+
+                "Your password manager warns that one of your saved passwords has appeared in a breach. What should you do?",
+
+                [
+
+                    "Ignore the warning if you still have access",
+
+                    "Change that password and check whether it was reused elsewhere",
+
+                    "Delete the warning message only",
+
+                    "Turn off password manager notifications"
+
                 ],
-                "answer": "To require an additional form of verification",
-                "explanation": (
-                    "MFA adds another verification step, reducing the chance "
-                    "that a stolen password alone can be used to access an account."
-                )
-            },
-            {
-                "question": "What should you do if you believe one of your passwords has been stolen?",
-                "options": [
-                    "Continue using it",
-                    "Change it as soon as possible",
-                    "Post it online",
-                    "Use the same password on more accounts"
+
+                1,
+
+                "Compromised passwords should be replaced and reused passwords should be checked."
+
+            ),
+
+            (
+
+                "Someone repeatedly sends authentication approval requests that you did not initiate. What should you do?",
+
+                [
+
+                    "Approve one request to stop the notifications",
+
+                    "Share your authentication code with the caller",
+
+                    "Disable your account security permanently",
+
+                    "Reject the requests and secure or report the account"
+
                 ],
-                "answer": "Change it as soon as possible",
-                "explanation": (
-                    "A compromised password should be changed promptly to "
-                    "reduce the risk of unauthorised access."
-                )
-            },
-            {
-                "question": "What is a password manager designed to do?",
-                "options": [
-                    "Help store and manage passwords securely",
-                    "Remove the need for account authentication",
-                    "Send passwords to other users",
-                    "Disable multi-factor authentication"
+
+                3,
+
+                "Unexpected authentication requests may indicate an attempted account compromise."
+
+            ),
+
+            (
+
+                "A website offers account recovery codes after you enable multi-factor authentication. How should you handle them?",
+
+                [
+
+                    "Store them securely somewhere separate from your usual login method",
+
+                    "Publish them in a private social media post",
+
+                    "Email them to everyone in your contacts",
+
+                    "Discard them because recovery is never needed"
+
                 ],
-                "answer": "Help store and manage passwords securely",
-                "explanation": (
-                    "Password managers can help users store and manage unique "
-                    "passwords without needing to remember every password."
-                )
-            }
-        ]
+
+                0,
+
+                "Recovery codes provide account access and must be stored securely."
+
+            )
+
+        ])
+
     },
 
-
-    # --------------------------------------------------
     # 4. SOCIAL ENGINEERING
-    # --------------------------------------------------
 
     "social-engineering": {
+
         "name": "Social Engineering",
-        "questions": [
-            {
-                "question": "What does social engineering mainly target?",
-                "options": [
-                    "Human behaviour and decision-making",
-                    "Computer screen resolution",
-                    "Internet connection speed",
-                    "Computer storage capacity"
+
+        "questions": make_questions([
+
+            (
+
+                "A caller claims to be from IT support and asks you to install remote-access software immediately. What should you do?",
+
+                [
+
+                    "Install it because the caller knows your name",
+
+                    "Provide your password before asking questions",
+
+                    "Verify the request through your organisation's official IT support channel",
+
+                    "Allow remote access for five minutes only"
+
                 ],
-                "answer": "Human behaviour and decision-making",
-                "explanation": (
-                    "Social engineering attempts to manipulate people into "
-                    "revealing information or performing unsafe actions."
-                )
-            },
-            {
-                "question": "Why might an attacker pretend to be a trusted employee or organisation?",
-                "options": [
-                    "To make the victim more likely to trust the request",
-                    "To improve the victim's computer",
-                    "To install legitimate updates",
-                    "To increase network speed"
+
+                2,
+
+                "Unexpected support requests should be verified through official channels."
+
+            ),
+
+            (
+
+                "Someone wearing a delivery uniform asks you to hold open a secure office door because they forgot their access card. What is the safest response?",
+
+                [
+
+                    "Allow entry because the uniform looks genuine",
+
+                    "Follow the building's visitor and access-control procedures",
+
+                    "Give them your own access card",
+
+                    "Leave the door unlocked for future deliveries"
+
                 ],
-                "answer": "To make the victim more likely to trust the request",
-                "explanation": (
-                    "Impersonating a trusted person or organisation can make "
-                    "a fraudulent request appear more believable."
-                )
-            },
-            {
-                "question": "Which situation could be an example of social engineering?",
-                "options": [
-                    "Someone pretending to be IT support asks for your password",
-                    "Your computer installs an authorised update",
-                    "You create a document",
-                    "You restart your computer"
+
+                1,
+
+                "Tailgating is a social engineering technique used to bypass physical security."
+
+            ),
+
+            (
+
+                "A person on social media offers you a prize but requires your account recovery code first. What tactic are they using?",
+
+                [
+
+                    "Legitimate account verification",
+
+                    "A routine software update",
+
+                    "A secure payment method",
+
+                    "Manipulation using a reward to obtain sensitive information"
+
                 ],
-                "answer": "Someone pretending to be IT support asks for your password",
-                "explanation": (
-                    "Impersonating IT support to obtain confidential information "
-                    "is a common example of social engineering."
-                )
-            },
-            {
-                "question": "What should you do with an unusual request for confidential information?",
-                "options": [
-                    "Verify the request using a trusted method",
-                    "Provide the information immediately",
-                    "Post the information publicly",
-                    "Ignore all security procedures"
+
+                3,
+
+                "Attackers sometimes offer rewards to persuade victims to disclose confidential information."
+
+            ),
+
+            (
+
+                "A caller says they are a senior manager and demands confidential employee records immediately. What should you do?",
+
+                [
+
+                    "Verify their identity and authorisation using established procedures",
+
+                    "Send the records because senior managers never need verification",
+
+                    "Upload the records to a public file-sharing website",
+
+                    "Ask the caller to confirm only their first name"
+
                 ],
-                "answer": "Verify the request using a trusted method",
-                "explanation": (
-                    "Unusual requests should be independently verified before "
-                    "sensitive information is disclosed."
-                )
-            },
-            {
-                "question": "Which emotion may be deliberately used in a social engineering attack?",
-                "options": [
-                    "Fear or urgency",
-                    "Relaxation only",
-                    "Boredom only",
-                    "Happiness only"
+
+                0,
+
+                "Claims of authority should not bypass normal identity and access checks."
+
+            ),
+
+            (
+
+                "A stranger begins a friendly conversation and gradually asks detailed questions about your workplace security procedures. What should you consider?",
+
+                [
+
+                    "Friendly people cannot be attackers",
+
+                    "Any information is safe if it is shared verbally",
+
+                    "The person may be gathering information for a later attack",
+
+                    "Security information becomes harmless outside the office"
+
                 ],
-                "answer": "Fear or urgency",
-                "explanation": (
-                    "Attackers may create fear or urgency to reduce the time "
-                    "a person takes to question or verify a request."
-                )
-            }
-        ]
+
+                2,
+
+                "Social engineers may build trust gradually to gather information."
+
+            )
+
+        ])
+
     },
 
-
-    # --------------------------------------------------
     # 5. MALWARE & RANSOMWARE
-    # --------------------------------------------------
 
     "malware-ransomware": {
+
         "name": "Malware & Ransomware",
-        "questions": [
-            {
-                "question": "What is malware?",
-                "options": [
-                    "Software designed to cause harm or perform malicious actions",
-                    "Software used only for writing documents",
-                    "A secure backup method",
-                    "A type of computer monitor"
+
+        "questions": make_questions([
+
+            (
+
+                "Your computer suddenly displays a message saying your files have been encrypted and payment is required. What should you do?",
+
+                [
+
+                    "Pay immediately without informing anyone",
+
+                    "Disconnect the affected device from networks where safe and report the incident",
+
+                    "Email the encrypted files to colleagues",
+
+                    "Install random recovery tools from advertisements"
+
                 ],
-                "answer": "Software designed to cause harm or perform malicious actions",
-                "explanation": (
-                    "Malware is malicious software designed to damage systems, "
-                    "steal information or perform other unwanted actions."
-                )
-            },
-            {
-                "question": "What can ransomware do?",
-                "options": [
-                    "Encrypt or lock data and demand payment",
-                    "Improve computer performance",
-                    "Create stronger passwords",
-                    "Increase internet speed"
+
+                1,
+
+                "Prompt isolation and reporting can help contain ransomware."
+
+            ),
+
+            (
+
+                "Why is a backup connected permanently to the same computer sometimes insufficient against ransomware?",
+
+                [
+
+                    "Connected backups may also be encrypted or damaged",
+
+                    "Backups cannot contain documents",
+
+                    "Ransomware only affects internet browsers",
+
+                    "Connected storage automatically blocks malware"
+
                 ],
-                "answer": "Encrypt or lock data and demand payment",
-                "explanation": (
-                    "Ransomware can prevent users from accessing their data "
-                    "or systems and demand payment."
-                )
-            },
-            {
-                "question": "How can malware sometimes reach a computer?",
-                "options": [
-                    "Through malicious attachments or downloads",
-                    "Only through a computer keyboard",
-                    "Only through a printer",
-                    "Only when the computer is switched off"
+
+                0,
+
+                "Ransomware may affect accessible backups as well as the original files."
+
+            ),
+
+            (
+
+                "A free software installer offers an unrelated browser extension that is selected by default. What is the safest approach?",
+
+                [
+
+                    "Install everything because the software is free",
+
+                    "Disable security software before continuing",
+
+                    "Accept all optional components without reading",
+
+                    "Review the installer carefully and decline unnecessary additions"
+
                 ],
-                "answer": "Through malicious attachments or downloads",
-                "explanation": (
-                    "Malicious files, attachments and downloads are common "
-                    "ways malware can be delivered."
-                )
-            },
-            {
-                "question": "Why are software updates important for security?",
-                "options": [
-                    "They can fix known security vulnerabilities",
-                    "They guarantee that phishing cannot happen",
-                    "They make every password unnecessary",
-                    "They prevent all human mistakes"
+
+                3,
+
+                "Bundled software may introduce unwanted or potentially harmful programs."
+
+            ),
+
+            (
+
+                "Your antivirus software quarantines a suspicious file downloaded from an unknown website. What should you do?",
+
+                [
+
+                    "Restore the file immediately",
+
+                    "Send the file to your friends",
+
+                    "Leave it quarantined and follow the security software's guidance",
+
+                    "Disable antivirus protection permanently"
+
                 ],
-                "answer": "They can fix known security vulnerabilities",
-                "explanation": (
-                    "Updates often contain security patches that correct "
-                    "known weaknesses in software."
-                )
-            },
-            {
-                "question": "Which practice can help reduce the impact of ransomware?",
-                "options": [
-                    "Maintaining appropriate backups of important data",
-                    "Opening every unexpected attachment",
-                    "Disabling security software",
-                    "Sharing passwords with other people"
+
+                2,
+
+                "Quarantine helps prevent suspicious files from running."
+
+            ),
+
+            (
+
+                "What is a realistic benefit of testing your data backups?",
+
+                [
+
+                    "It guarantees no future cyberattack",
+
+                    "It confirms that important files can actually be restored",
+
+                    "It removes the need for access controls",
+
+                    "It makes antivirus software unnecessary"
+
                 ],
-                "answer": "Maintaining appropriate backups of important data",
-                "explanation": (
-                    "Appropriate backups can help recover important information "
-                    "if data becomes unavailable or damaged."
-                )
-            }
-        ]
+
+                1,
+
+                "Backups are useful only when the required data can be recovered."
+
+            )
+
+        ])
+
     },
 
-
-    # --------------------------------------------------
     # 6. SAFE BROWSING & EMAIL SECURITY
-    # --------------------------------------------------
 
     "safe-browsing": {
+
         "name": "Safe Browsing & Email Security",
-        "questions": [
-            {
-                "question": "What should you check before entering sensitive information on a website?",
-                "options": [
-                    "That the website address is legitimate",
-                    "That the page contains many pictures",
-                    "That the website uses large text",
-                    "That someone has shared it on social media"
+
+        "questions": make_questions([
+
+            (
+
+                "You are about to enter payment details on an unfamiliar online shop. What should you check first?",
+
+                [
+
+                    "Whether the site has colourful advertisements",
+
+                    "Whether the site offers a large discount",
+
+                    "Whether the website and seller are legitimate and the connection is secure",
+
+                    "Whether the page contains customer photographs"
+
                 ],
-                "answer": "That the website address is legitimate",
-                "explanation": (
-                    "Checking the website address can help identify fake "
-                    "websites designed to steal information."
-                )
-            },
-            {
-                "question": "What should you do with an unexpected email attachment?",
-                "options": [
-                    "Verify the sender and attachment before opening it",
-                    "Open it immediately",
-                    "Disable security software first",
-                    "Forward it to everyone you know"
+
+                2,
+
+                "Check the seller, website address and connection before providing payment information."
+
+            ),
+
+            (
+
+                "Your browser warns that a website's security certificate is invalid. What should you do?",
+
+                [
+
+                    "Avoid entering sensitive information and investigate the warning",
+
+                    "Ignore the warning because every website has one",
+
+                    "Disable browser security checks permanently",
+
+                    "Enter your password to remove the warning"
+
                 ],
-                "answer": "Verify the sender and attachment before opening it",
-                "explanation": (
-                    "Unexpected attachments may contain malware and should "
-                    "be verified before they are opened."
-                )
-            },
-            {
-                "question": "Why should shortened or unfamiliar links be treated carefully?",
-                "options": [
-                    "They may hide the real destination",
-                    "They always improve security",
-                    "They automatically remove malware",
-                    "They cannot lead to websites"
+
+                0,
+
+                "Certificate warnings can indicate problems with a site's identity or secure connection."
+
+            ),
+
+            (
+
+                "You receive an email addressed to many recipients, and you need to reply only to the sender. What should you check?",
+
+                [
+
+                    "Whether the message has a colourful signature",
+
+                    "Whether the email was sent in the morning",
+
+                    "Whether your browser is in dark mode",
+
+                    "Whether you selected Reply rather than Reply All"
+
                 ],
-                "answer": "They may hide the real destination",
-                "explanation": (
-                    "Some links can disguise their true destination, making "
-                    "it harder to identify suspicious websites."
-                )
-            },
-            {
-                "question": "What is a safer way to access an organisation's website after receiving a suspicious email?",
-                "options": [
-                    "Type the known website address yourself or use a trusted bookmark",
-                    "Use the suspicious email link",
-                    "Reply and ask for your password",
-                    "Forward the email to strangers"
+
+                3,
+
+                "Checking recipients prevents accidental disclosure to unnecessary recipients."
+
+            ),
+
+            (
+
+                "A browser pop-up claims your computer is infected and gives a telephone number for urgent technical support. What should you do?",
+
+                [
+
+                    "Call the number and provide remote access",
+
+                    "Close the suspicious page and use trusted security tools if needed",
+
+                    "Enter payment details to remove the warning",
+
+                    "Install the software offered by the pop-up"
+
                 ],
-                "answer": "Type the known website address yourself or use a trusted bookmark",
-                "explanation": (
-                    "Using a known address or trusted bookmark avoids relying "
-                    "on potentially malicious links in suspicious messages."
-                )
-            },
-            {
-                "question": "What should you do if a website unexpectedly asks for sensitive information?",
-                "options": [
-                    "Check the website carefully before providing anything",
-                    "Provide the information immediately",
-                    "Disable your browser security",
-                    "Share the request with strangers"
+
+                1,
+
+                "Fake security alerts may attempt to trick users into contacting scammers."
+
+            ),
+
+            (
+
+                "An email includes a shortened URL that hides its destination. What is the safest approach?",
+
+                [
+
+                    "Assume shortened links are always safe",
+
+                    "Click it because it is easier to read",
+
+                    "Verify the destination or access the intended website independently",
+
+                    "Forward it to others to check"
+
                 ],
-                "answer": "Check the website carefully before providing anything",
-                "explanation": (
-                    "Unexpected requests for sensitive information should be "
-                    "treated cautiously and verified before responding."
-                )
-            }
-        ]
+
+                2,
+
+                "Shortened links can conceal deceptive or malicious destinations."
+
+            )
+
+        ])
+
     },
 
-
-    # --------------------------------------------------
     # 7. ONLINE PRIVACY & PERSONAL DATA
-    # --------------------------------------------------
 
     "online-privacy": {
+
         "name": "Online Privacy & Personal Data",
-        "questions": [
-            {
-                "question": "Why should you be careful about sharing personal information online?",
-                "options": [
-                    "It may be misused by criminals or other people",
-                    "It always improves account security",
-                    "It automatically creates backups",
-                    "It prevents phishing"
+
+        "questions": make_questions([
+
+            (
+
+                "A social media app makes your profile publicly visible by default. What should you do if you want to limit who sees your posts?",
+
+                [
+
+                    "Review and adjust the account's privacy settings",
+
+                    "Post your password to warn other users",
+
+                    "Delete your device's security updates",
+
+                    "Accept every new follower automatically"
+
                 ],
-                "answer": "It may be misused by criminals or other people",
-                "explanation": (
-                    "Personal information can sometimes be used for fraud, "
-                    "impersonation or targeted scams."
-                )
-            },
-            {
-                "question": "Which information should generally be treated as sensitive?",
-                "options": [
-                    "Passwords and financial information",
-                    "A public weather forecast",
-                    "The name of a public website",
-                    "A general news headline"
+
+                0,
+
+                "Privacy settings help control who can view your shared information."
+
+            ),
+
+            (
+
+                "A shopping website asks for your home address when you are only subscribing to a newsletter. What should you consider?",
+
+                [
+
+                    "Every website needs your full address",
+
+                    "The information is automatically anonymous",
+
+                    "Giving extra information always improves security",
+
+                    "Whether the information is genuinely necessary for the service"
+
                 ],
-                "answer": "Passwords and financial information",
-                "explanation": (
-                    "Passwords and financial information can provide access "
-                    "to accounts or be used for fraud."
-                )
-            },
-            {
-                "question": "Why is it useful to review privacy settings on online accounts?",
-                "options": [
-                    "To control who can access information you share",
-                    "To make every account public",
-                    "To remove all passwords",
-                    "To disable account security"
+
+                3,
+
+                "Avoid providing personal information that is not needed for the service."
+
+            ),
+
+            (
+
+                "A navigation app requests permanent access to your location, but it only needs location for a single search. What is the better choice?",
+
+                [
+
+                    "Allow permanent access to avoid prompts",
+
+                    "Choose access only while using the app, or only when needed",
+
+                    "Share your location publicly instead",
+
+                    "Disable every other privacy setting"
+
                 ],
-                "answer": "To control who can access information you share",
-                "explanation": (
-                    "Privacy settings can help users control the visibility "
-                    "of information shared through an online service."
-                )
-            },
-            {
-                "question": "What is a safer approach when an unfamiliar website asks for unnecessary personal information?",
-                "options": [
-                    "Avoid providing information that is not needed",
-                    "Provide every detail requested",
-                    "Use another person's information",
-                    "Post the information publicly"
+
+                1,
+
+                "Limiting location permissions reduces unnecessary collection of sensitive information."
+
+            ),
+
+            (
+
+                "Why might combining your birthday, school and pet's name in public posts be risky?",
+
+                [
+
+                    "It prevents account recovery",
+
+                    "It automatically publishes your passwords",
+
+                    "It makes your internet connection less secure",
+
+                    "It can help attackers guess security answers or craft convincing scams"
+
                 ],
-                "answer": "Avoid providing information that is not needed",
-                "explanation": (
-                    "Limiting unnecessary disclosure reduces the amount of "
-                    "personal information that could be exposed or misused."
-                )
-            },
-            {
-                "question": "Why can information shared on social media create a security risk?",
-                "options": [
-                    "Attackers may use it to make scams more convincing",
-                    "Social media automatically deletes passwords",
-                    "It prevents attackers from contacting users",
-                    "It guarantees account protection"
+
+                3,
+
+                "Public personal details may help attackers impersonate you or target you."
+
+            ),
+
+            (
+
+                "What is data minimisation when signing up for an online service?",
+
+                [
+
+                    "Using the same password for every service",
+
+                    "Making every profile public",
+
+                    "Providing only the personal information genuinely required",
+
+                    "Giving a false identity in every situation"
+
                 ],
-                "answer": "Attackers may use it to make scams more convincing",
-                "explanation": (
-                    "Public personal information can help attackers create "
-                    "more believable and targeted fraudulent messages."
-                )
-            }
-        ]
+
+                2,
+
+                "Data minimisation limits collection and disclosure to necessary information."
+
+            )
+
+        ])
+
     },
 
-
-    # --------------------------------------------------
     # 8. PUBLIC WI-FI & NETWORK SAFETY
-    # --------------------------------------------------
 
     "public-wifi": {
+
         "name": "Public Wi-Fi & Network Safety",
-        "questions": [
-            {
-                "question": "Why should you be cautious when using public Wi-Fi?",
-                "options": [
-                    "The network may not always be trustworthy or secure",
-                    "Public Wi-Fi always deletes files",
-                    "Public Wi-Fi cannot connect to websites",
-                    "It automatically changes your passwords"
+
+        "questions": make_questions([
+
+            (
+
+                "You see two cafe Wi-Fi networks with nearly identical names. What should you do before connecting?",
+
+                [
+
+                    "Choose the one with the strongest signal",
+
+                    "Connect to both and compare speeds",
+
+                    "Ask another customer for their password",
+
+                    "Confirm the official network name with cafe staff"
+
                 ],
-                "answer": "The network may not always be trustworthy or secure",
-                "explanation": (
-                    "Public networks may provide less control and assurance "
-                    "than a trusted private network."
-                )
-            },
-            {
-                "question": "Which activity is better avoided on an untrusted public Wi-Fi network when possible?",
-                "options": [
-                    "Accessing highly sensitive accounts or financial services",
-                    "Reading an offline document",
-                    "Changing the screen brightness",
-                    "Using a calculator"
+
+                3,
+
+                "Attackers may create lookalike hotspots to impersonate legitimate networks."
+
+            ),
+
+            (
+
+                "Your laptop automatically connects to an open hotspot you used months ago. What is the best security improvement?",
+
+                [
+
+                    "Disable automatic joining for untrusted networks",
+
+                    "Turn off the laptop's screen lock",
+
+                    "Share files with nearby devices",
+
+                    "Use the hotspot for banking immediately"
+
                 ],
-                "answer": "Accessing highly sensitive accounts or financial services",
-                "explanation": (
-                    "Sensitive activities should preferably be carried out "
-                    "using a network or connection you trust."
-                )
-            },
-            {
-                "question": "What should you check before joining a public Wi-Fi network?",
-                "options": [
-                    "That you are connecting to the intended legitimate network",
-                    "That the network has the shortest name",
-                    "That your screen brightness is high",
-                    "That your computer has several open windows"
+
+                0,
+
+                "Disabling automatic connections reduces exposure to untrusted networks."
+
+            ),
+
+            (
+
+                "You need to access a sensitive work system while travelling. Which option is generally preferable?",
+
+                [
+
+                    "Any open network without a password",
+
+                    "A trusted connection using your organisation's approved security controls",
+
+                    "A hotspot advertised by an unknown pop-up",
+
+                    "The first Wi-Fi name that contains 'secure'"
+
                 ],
-                "answer": "That you are connecting to the intended legitimate network",
-                "explanation": (
-                    "Attackers can create misleading network names, so users "
-                    "should confirm that they are joining the intended network."
-                )
-            },
-            {
-                "question": "What should you do when you no longer need a public Wi-Fi connection?",
-                "options": [
-                    "Disconnect from the network",
-                    "Share the network with everyone",
-                    "Disable your device password",
-                    "Leave every account signed in"
+
+                1,
+
+                "Use trusted connections and follow organisational security policies."
+
+            ),
+
+            (
+
+                "What is the main risk of leaving file sharing enabled on an untrusted public network?",
+
+                [
+
+                    "It makes your battery charge faster",
+
+                    "It automatically backs up all files",
+
+                    "Other devices may be able to discover or access shared resources",
+
+                    "It prevents encrypted websites from loading"
+
                 ],
-                "answer": "Disconnect from the network",
-                "explanation": (
-                    "Disconnecting when the network is no longer needed reduces "
-                    "unnecessary exposure to an untrusted connection."
-                )
-            },
-            {
-                "question": "Which connection may be preferable for sensitive activity when public Wi-Fi is not trusted?",
-                "options": [
-                    "A trusted mobile data connection",
-                    "Any unknown open Wi-Fi network",
-                    "A network with a suspicious duplicate name",
-                    "A connection recommended by an unknown message"
+
+                2,
+
+                "Network sharing may expose files and services to nearby devices."
+
+            ),
+
+            (
+
+                "A public Wi-Fi login page asks for your main email password even though the venue did not mention an account requirement. What should you do?",
+
+                [
+
+                    "Enter the password if the page has a logo",
+
+                    "Try the password twice to confirm the page works",
+
+                    "Send the password to venue staff by email",
+
+                    "Stop and verify the request with venue staff before entering credentials"
+
                 ],
-                "answer": "A trusted mobile data connection",
-                "explanation": (
-                    "A trusted personal connection may be preferable to an "
-                    "unknown or untrusted public network for sensitive activity."
-                )
-            }
-        ]
+
+                3,
+
+                "Unexpected password requests may indicate a deceptive hotspot or login page."
+
+            )
+
+        ])
+
     },
 
-
-    # --------------------------------------------------
     # 9. DEVICE & SOFTWARE SECURITY
-    # --------------------------------------------------
 
     "device-security": {
+
         "name": "Device & Software Security",
-        "questions": [
-            {
-                "question": "Why should operating systems and applications be kept updated?",
-                "options": [
-                    "Updates can fix known security vulnerabilities",
-                    "Updates remove the need for passwords",
-                    "Updates prevent every phishing email",
-                    "Updates make all websites trustworthy"
+
+        "questions": make_questions([
+
+            (
+
+                "Your phone is lost while signed in to several important accounts. What should you do first?",
+
+                [
+
+                    "Use available device-location or remote-lock tools and secure affected accounts",
+
+                    "Wait for someone to return it before taking action",
+
+                    "Post your unlock PIN online to help the finder",
+
+                    "Turn off multi-factor authentication on all accounts"
+
                 ],
-                "answer": "Updates can fix known security vulnerabilities",
-                "explanation": (
-                    "Software updates frequently include patches for security "
-                    "weaknesses discovered after software was released."
-                )
-            },
-            {
-                "question": "Where should software preferably be downloaded from?",
-                "options": [
-                    "A trusted or official source",
-                    "Any unknown website",
-                    "A suspicious email attachment",
-                    "An unsolicited pop-up advertisement"
+
+                0,
+
+                "Remote locking and account protection help limit exposure after device loss."
+
+            ),
+
+            (
+
+                "Why is enabling automatic security updates often helpful?",
+
+                [
+
+                    "It removes the need for backups",
+
+                    "It ensures every downloaded application is trustworthy",
+
+                    "It reduces the time a device remains exposed to known vulnerabilities",
+
+                    "It prevents all physical theft"
+
                 ],
-                "answer": "A trusted or official source",
-                "explanation": (
-                    "Trusted and official sources reduce the risk of installing "
-                    "modified, fake or malicious software."
-                )
-            },
-            {
-                "question": "Why is a screen lock useful on a device?",
-                "options": [
-                    "It helps prevent unauthorised access when the device is unattended",
-                    "It increases internet speed",
-                    "It automatically backs up every file",
-                    "It prevents all malware"
+
+                2,
+
+                "Automatic security updates help address known vulnerabilities promptly."
+
+            ),
+
+            (
+
+                "A newly installed app requests administrator privileges without explaining why. What should you do?",
+
+                [
+
+                    "Approve because administrator access is always required",
+
+                    "Decline and investigate whether the app genuinely needs those privileges",
+
+                    "Disable antivirus software before approving",
+
+                    "Share the administrator password with the app developer"
+
                 ],
-                "answer": "It helps prevent unauthorised access when the device is unattended",
-                "explanation": (
-                    "A screen lock helps protect information if another person "
-                    "tries to use an unattended device."
-                )
-            },
-            {
-                "question": "What should you do if your device displays an unexpected request to install unknown software?",
-                "options": [
-                    "Do not install it until you verify that it is legitimate",
-                    "Install it immediately",
-                    "Disable security controls first",
-                    "Send it to other people"
+
+                1,
+
+                "Unnecessary administrator privileges can increase security risks."
+
+            ),
+
+            (
+
+                "What is the main purpose of full-disk encryption on a laptop?",
+
+                [
+
+                    "To prevent the laptop from being stolen",
+
+                    "To improve wireless signal strength",
+
+                    "To guarantee that malware cannot run",
+
+                    "To protect stored data from unauthorised reading if the device is lost"
+
                 ],
-                "answer": "Do not install it until you verify that it is legitimate",
-                "explanation": (
-                    "Unexpected software installation requests may be unsafe "
-                    "and should be verified before proceeding."
-                )
-            },
-            {
-                "question": "Why is it important to protect a device with authentication such as a password or PIN?",
-                "options": [
-                    "It helps prevent unauthorised access to the device",
-                    "It guarantees that the device cannot be lost",
-                    "It makes every website safe",
-                    "It removes the need for software updates"
+
+                3,
+
+                "Full-disk encryption protects stored data if a device is lost or stolen."
+
+            ),
+
+            (
+
+                "A work computer has been unused for several months. What should you do before using it for sensitive tasks?",
+
+                [
+
+                    "Install approved security updates and check its protection status",
+
+                    "Disable its screen lock for convenience",
+
+                    "Connect unknown USB devices to test the ports",
+
+                    "Ignore all update prompts because it still starts"
+
                 ],
-                "answer": "It helps prevent unauthorised access to the device",
-                "explanation": (
-                    "Device authentication provides a barrier against someone "
-                    "accessing information without permission."
-                )
-            }
-        ]
+
+                0,
+
+                "Devices that have missed security updates may contain known vulnerabilities."
+
+            )
+
+        ])
+
     }
+
 }
 
-
 # --------------------------------------------------
+
 # QUIZ CENTRE
+
 # --------------------------------------------------
 
 @app.route("/quizzes")
+
 def quiz_centre():
 
     if "username" not in session:
-        return redirect("/login")
+
+        return redirect(url_for("login", next="quizzes"))
 
     return render_template(
+
         "quizzes.html",
+
         quizzes=quizzes
+
     )
 
-
 # --------------------------------------------------
+
 # REUSABLE QUIZ ROUTE
+
 # --------------------------------------------------
 
 @app.route("/quiz/<quiz_id>", methods=["GET", "POST"])
+
 def take_quiz(quiz_id):
 
     if "username" not in session:
+
         return redirect("/login")
 
-    # Check that the requested quiz exists
     if quiz_id not in quizzes:
+
         return redirect("/quizzes")
 
     selected_quiz = quizzes[quiz_id]
+
     questions = selected_quiz["questions"]
+
     quiz_name = selected_quiz["name"]
 
     if request.method == "POST":
 
         score = 0
+
         feedback = []
 
         for index, question in enumerate(questions):
 
             selected_answer = request.form.get(
+
                 f"question_{index}"
+
             )
 
             is_correct = selected_answer == question["answer"]
 
             if is_correct:
+
                 score += 1
 
             feedback.append({
+
                 "question_number": index + 1,
+
                 "question": question["question"],
+
                 "selected_answer": selected_answer,
+
                 "correct_answer": question["answer"],
+
                 "is_correct": is_correct,
+
                 "explanation": question["explanation"]
+
             })
 
         total = len(questions)
+
         percentage = (score / total) * 100
 
-        # Save quiz result
         conn = sqlite3.connect("users.db")
+
         cursor = conn.cursor()
 
         cursor.execute(
+
             """
+
             INSERT INTO quiz_results
+
             (username, score, total, percentage, quiz_name)
+
             VALUES (?, ?, ?, ?, ?)
+
             """,
+
             (
+
                 session["username"],
+
                 score,
+
                 total,
+
                 percentage,
+
                 quiz_name
+
             )
+
         )
 
         conn.commit()
+
         conn.close()
 
         return render_template(
+
             "results.html",
+
             score=score,
+
             total=total,
+
             percentage=percentage,
+
             feedback=feedback,
+
             quiz_name=quiz_name,
+
             retry_url=f"/quiz/{quiz_id}"
+
         )
 
     return render_template(
+
         "quiz.html",
+
         questions=questions,
+
         quiz_name=quiz_name
+
     )
 
-
 # --------------------------------------------------
+
 # OLD GENERAL QUIZ ADDRESS
+
 # --------------------------------------------------
 
 @app.route("/quiz")
+
 def old_quiz_route():
 
     if "username" not in session:
+
         return redirect("/login")
 
     return redirect("/quiz/general")
 
-
 # --------------------------------------------------
+
 # LOGOUT
+
 # --------------------------------------------------
 
 @app.route("/logout")
+
 def logout():
 
     session.pop("username", None)
 
     return redirect("/")
 
-
-
 # --------------------------------------------------
+
 # DASHBOARD
+
 # --------------------------------------------------
 
 @app.route("/dashboard")
+
 def dashboard():
 
     if "username" not in session:
+
         return redirect("/login")
 
     username = session["username"]
 
     conn = sqlite3.connect("users.db")
+
     cursor = conn.cursor()
 
-    # Get all quiz results for the logged-in user
     cursor.execute(
+
         """
+
         SELECT quiz_name, score, total, percentage
+
         FROM quiz_results
+
         WHERE username = ?
+
         """,
+
         (username,)
+
     )
 
     results = cursor.fetchall()
 
     conn.close()
 
-    # Store the best attempt for each quiz
     best_results = {}
 
     for quiz_name, score, total, percentage in results:
 
-        # Treat older General quiz results as the current General quiz
         if quiz_name == "General Cybersecurity":
+
             quiz_name = "General Cybersecurity Awareness"
 
         if quiz_name not in best_results:
+
             best_results[quiz_name] = {
+
                 "score": score,
+
                 "total": total,
+
                 "percentage": percentage
+
             }
 
         elif percentage > best_results[quiz_name]["percentage"]:
+
             best_results[quiz_name] = {
+
                 "score": score,
+
                 "total": total,
+
                 "percentage": percentage
+
             }
 
-    # Build Dashboard progress
     quiz_progress = []
 
     completed_quizzes = 0
+
     total_best_points = 0
+
     total_available_points = 0
 
     for quiz_id, quiz_data in quizzes.items():
 
         quiz_name = quiz_data["name"]
+
         quiz_total = len(quiz_data["questions"])
 
         total_available_points += quiz_total
@@ -1161,53 +1766,353 @@ def dashboard():
         if best_result is not None:
 
             completed_quizzes += 1
+
             total_best_points += best_result["score"]
 
             quiz_progress.append({
+
                 "quiz_id": quiz_id,
+
                 "quiz_name": quiz_name,
+
                 "best_score": best_result["score"],
+
                 "total": quiz_total,
+
                 "best_percentage": best_result["percentage"]
+
             })
 
         else:
 
             quiz_progress.append({
+
                 "quiz_id": quiz_id,
+
                 "quiz_name": quiz_name,
+
                 "best_score": None,
+
                 "total": quiz_total,
+
                 "best_percentage": None
+
             })
 
     total_quizzes = len(quizzes)
 
-    # Only calculate the final overall result
-    # after all quizzes have been completed
+    certificate_eligible = (
+
+        completed_quizzes == total_quizzes
+
+        and all(
+
+            result["best_percentage"] is not None
+
+            and result["best_percentage"] >= 70
+
+            for result in quiz_progress
+
+        )
+
+    )
+
     if completed_quizzes == total_quizzes:
 
         overall_percentage = (
+
             total_best_points / total_available_points
+
         ) * 100
 
     else:
+
         overall_percentage = None
 
     return render_template(
+
         "dashboard.html",
+
         username=username,
+
         quiz_progress=quiz_progress,
+
         completed_quizzes=completed_quizzes,
+
         total_quizzes=total_quizzes,
+
         total_best_points=total_best_points,
+
         total_available_points=total_available_points,
-        overall_percentage=overall_percentage
+
+        overall_percentage=overall_percentage,
+
+        certificate_eligible=certificate_eligible
+
     )
 
 # --------------------------------------------------
+
+# CERTIFICATE OF COMPLETION
+
+# --------------------------------------------------
+
+# --------------------------------------------------
+
+# CERTIFICATE OF COMPLETION
+
+# --------------------------------------------------
+
+@app.route("/certificate")
+
+def certificate():
+
+    if "username" not in session:
+
+        return redirect("/login")
+
+    username = session["username"]
+
+    conn = sqlite3.connect("users.db")
+
+    cursor = conn.cursor()
+
+    # Retrieve all quiz attempts in chronological order.
+
+    # The database already stores the date of each attempt.
+
+    cursor.execute(
+
+        """
+
+        SELECT quiz_name, score, total, percentage, date_taken, id
+
+        FROM quiz_results
+
+        WHERE username = ?
+
+        ORDER BY date_taken ASC, id ASC
+
+        """,
+
+        (username,)
+
+    )
+
+    attempts = cursor.fetchall()
+
+    conn.close()
+
+    # Quiz names that count towards the certificate
+
+    required_quizzes = {
+
+        quiz_data["name"]: len(quiz_data["questions"])
+
+        for quiz_data in quizzes.values()
+
+    }
+
+    # Track the highest percentage achieved in each quiz.
+
+    best_percentages = {}
+
+    # The first moment all quizzes reached 70%.
+
+    first_completion_date = None
+
+    for quiz_name, score, total, percentage, date_taken, attempt_id in attempts:
+
+        # Support results saved under the older General quiz name
+
+        if quiz_name == "General Cybersecurity":
+
+            quiz_name = "General Cybersecurity Awareness"
+
+        # Ignore results from quizzes that are no longer part
+
+        # of the application.
+
+        if quiz_name not in required_quizzes:
+
+            continue
+
+        # Keep the best percentage reached so far.
+
+        if quiz_name not in best_percentages:
+
+            best_percentages[quiz_name] = percentage
+
+        else:
+
+            best_percentages[quiz_name] = max(
+
+                best_percentages[quiz_name],
+
+                percentage
+
+            )
+
+        # Check whether the user has qualified at this point.
+
+        qualified = all(
+
+            best_percentages.get(required_name, 0) >= 70
+
+            for required_name in required_quizzes
+
+        )
+
+        if qualified:
+
+            first_completion_date = date_taken
+
+            break
+
+    # Users who have not qualified cannot access the certificate.
+
+    if first_completion_date is None:
+
+        return redirect("/dashboard")
+
+    # Calculate the current best overall achievement using
+
+    # all attempts, including retakes after qualification.
+
+    best_results = {}
+
+    for quiz_name, score, total, percentage, date_taken, attempt_id in attempts:
+
+        if quiz_name == "General Cybersecurity":
+
+            quiz_name = "General Cybersecurity Awareness"
+
+        if quiz_name not in required_quizzes:
+
+            continue
+
+        if (
+
+            quiz_name not in best_results
+
+            or percentage > best_results[quiz_name]["percentage"]
+
+        ):
+
+            best_results[quiz_name] = {
+
+                "score": score,
+
+                "total": total,
+
+                "percentage": percentage
+
+            }
+
+    total_best_points = 0
+
+    total_available_points = 0
+
+    for quiz_name, question_count in required_quizzes.items():
+
+        best_percentage = best_results[quiz_name]["percentage"]
+
+        total_best_points += (
+
+            best_percentage / 100
+
+        ) * question_count
+
+        total_available_points += question_count
+
+    overall_percentage = (
+
+        (total_best_points / total_available_points) * 100
+
+        if total_available_points > 0 else 0
+
+    )
+
+    # Convert the saved SQLite timestamp into a readable date.
+
+    from datetime import datetime
+
+    completion_date = datetime.strptime(
+
+        first_completion_date,
+
+        "%Y-%m-%d %H:%M:%S"
+
+    ).strftime("%d %B %Y")
+
+    return render_template(
+
+        "certificate.html",
+
+        username=username,
+
+        completion_date=completion_date,
+
+        overall_percentage=overall_percentage
+
+    )
+
+# --------------------------------------------------
+
+# --------------------------------------------------
+# ANONYMOUS EVALUATION FEEDBACK
+# --------------------------------------------------
+
+@app.route("/feedback", methods=["GET", "POST"])
+def feedback():
+    if "username" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        if request.form.get("consent") != "yes":
+            return "Please confirm consent before submitting feedback.", 400
+
+        try:
+            ratings = [int(request.form.get(f"q{i}", "")) for i in range(1, 11)]
+        except (ValueError, TypeError):
+            return "Please answer all ten rating questions.", 400
+
+        if any(rating < 1 or rating > 5 for rating in ratings):
+            return "Each rating must be between 1 and 5.", 400
+
+        positive = request.form.get("positive_feedback", "").strip()
+        improvements = request.form.get("improvement_feedback", "").strip()
+        if len(positive) > 1000 or len(improvements) > 1000:
+            return "Written feedback must be no longer than 1000 characters.", 400
+
+        conn = sqlite3.connect("users.db")
+        try:
+            conn.execute("""
+                INSERT INTO evaluation_feedback (
+                    q1, q2, q3, q4, q5, q6, q7, q8, q9, q10,
+                    positive_feedback, improvement_feedback
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (*ratings, positive, improvements))
+            conn.commit()
+        finally:
+            conn.close()
+
+        return redirect(url_for("feedback_success"))
+
+    return render_template("feedback.html")
+
+
+@app.route("/feedback/success")
+def feedback_success():
+    if "username" not in session:
+        return redirect(url_for("login"))
+    return render_template("feedback_success.html")
+
+
 # RUN APPLICATION
+
 # --------------------------------------------------
 
 if __name__ == "__main__":
-    app.run(debug=True)
+
+    app.run(debug=True, port=5001)

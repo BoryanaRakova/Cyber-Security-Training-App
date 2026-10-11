@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>User Feedback | Cybersecurity Training</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .feedback-container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .feedback-container h1 {
+            text-align: center;
+            color: #7dd3fc;
+            margin-bottom: 20px;
+        }
+
+        .feedback-intro {
+            text-align: center;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+
+        .feedback-card {
+            background: #10243a;
+            border: 1px solid #234763;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .feedback-card h2 {
+            color: #7dd3fc;
+            margin-bottom: 20px;
+        }
+
+        /* Highlighted participant information */
+        .participant-info {
+            background: #10243a;
+            border: 2px solid #38bdf8;
+            border-left: 6px solid #38bdf8;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 18px rgba(56, 189, 248, 0.15);
+        }
+
+        .participant-info h2 {
+            color: #7dd3fc;
+            margin-bottom: 15px;
+        }
+
+        .participant-info p,
+        .participant-info li {
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .participant-info ul {
+            padding-left: 25px;
+            margin-bottom: 20px;
+        }
+
+        .consent-area {
+            background: #071827;
+            border: 1px solid #37617e;
+            border-radius: 8px;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .consent-area label {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            line-height: 1.6;
+        }
+
+        .consent-area input {
+            margin-top: 5px;
+            accent-color: #7dd3fc;
+            transform: scale(1.2);
+            flex-shrink: 0;
+        }
+
+        .feedback-question {
+            padding: 18px 0;
+            border-bottom: 1px solid #29465e;
+        }
+
+        .feedback-question:last-child {
+            border-bottom: none;
+        }
+
+        .feedback-question p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .feedback-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .feedback-options label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .feedback-options input {
+            accent-color: #7dd3fc;
+        }
+
+        .feedback-textarea {
+            width: 100%;
+            min-height: 110px;
+            padding: 12px;
+            margin: 12px 0 25px;
+            border: 1px solid #37617e;
+            border-radius: 8px;
+            background: #071827;
+            color: #ffffff;
+            font: inherit;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        .feedback-textarea:focus {
+            outline: 2px solid #7dd3fc;
+        }
+
+        .feedback-submit {
+            display: block;
+            margin: 25px auto;
+            padding: 14px 35px;
+            background: #7dd3fc;
+            color: #071827;
+            border: none;
+            border-radius: 8px;
+            font: inherit;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .feedback-submit:hover {
+            background: #bae6fd;
+        }
+
+        @media (max-width: 600px) {
+            .feedback-container {
+                margin: 20px auto;
+                padding: 12px;
+            }
+
+            .feedback-card,
+            .participant-info {
+                padding: 18px;
+            }
+
+            .feedback-options {
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-page">
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/training">Training</a>
+        <a href="/quizzes">Quizzes</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/logout">Logout</a>
+    </nav>
+
+    <main class="feedback-container">
+
+        <h1>User Feedback</h1>
+
+        <div class="feedback-intro">
+            <p>
+                Thank you for evaluating the Cybersecurity
+                Awareness and Training Application.
+            </p>
+        </div>
+
+        <form action="{{ url_for('feedback') }}" method="POST">
+
+            <!-- PARTICIPANT INFORMATION FIRST -->
+            <section class="participant-info">
+
+                <h2>
+                    &#9888; Important: Participant Information &amp; Privacy
+                </h2>
+
+                <p>
+                    <strong>
+                        Please read this information carefully
+                        before completing the questionnaire.
+                    </strong>
+                </p>
+
+                <ul>
+                    <li>
+                        <strong>Purpose:</strong>
+                        This questionnaire is designed to evaluate
+                        the usability and perceived usefulness of
+                        a cybersecurity awareness and training
+                        application developed for an academic
+                        dissertation.
+                    </li>
+
+                    <li>
+                        <strong>Participation:</strong>
+                        Taking part is voluntary. You may choose
+                        not to submit this questionnaire.
+                    </li>
+
+                    <li>
+                        <strong>Privacy:</strong>
+                        This form does not request your name,
+                        username or email address.
+                    </li>
+
+                    <li>
+                        <strong>Personal information:</strong>
+                        Please do not include identifying
+                        information in your written answers.
+                    </li>
+
+                    <li>
+                        <strong>Use of responses:</strong>
+                        Feedback will be analysed to evaluate
+                        the application and report findings
+                        in the dissertation.
+                    </li>
+
+                    <li>
+                        <strong>Further information:</strong>
+                        Please refer to the approved participant
+                        information sheet for details of data
+                        storage, retention, withdrawal and
+                        research contacts.
+                    </li>
+                </ul>
+
+                <div class="consent-area">
+
+                    <p>
+                        <strong>Consent Confirmation</strong>
+                    </p>
+
+                    <label>
+                        <input
+                            type="checkbox"
+                            name="consent"
+                            value="yes"
+                            required
+                        >
+
+                        <span>
+                            I confirm that I have read the
+                            approved participant information,
+                            understand the purpose of this
+                            evaluation, and voluntarily agree
+                            to submit my feedback for research
+                            purposes.
+                        </span>
+                    </label>
+
+                </div>
+
+            </section>
+
+            <!-- TEN LIKERT QUESTIONS -->
+            <section class="feedback-card">
+
+                <h2>Application Evaluation</h2>
+
+                <p>
+                    Please rate each statement:
+                </p>
+
+                <p>
+                    1 = Strongly Disagree<br>
+                    2 = Disagree<br>
+                    3 = Neutral<br>
+                    4 = Agree<br>
+                    5 = Strongly Agree
+                </p>
+
+                {% set statements = [
+                    "The application was easy to use.",
+                    "The navigation between pages was clear.",
+                    "The training materials were easy to understand.",
+                    "The training content was relevant to everyday cybersecurity risks.",
+                    "The quiz questions were clear and understandable.",
+                    "The quizzes helped me apply cybersecurity knowledge to realistic situations.",
+                    "The feedback provided after quizzes helped me understand my answers.",
+                    "The dashboard made it easy to understand my progress.",
+                    "Using the application improved my confidence in recognising cybersecurity threats.",
+                    "Overall, I was satisfied with the application."
+                ] %}
+
+                {% for statement in statements %}
+
+                    {% set question_number = loop.index %}
+
+                    <div class="feedback-question">
+
+                        <p>
+                            <strong>
+                                {{ question_number }}.
+                                {{ statement }}
+                            </strong>
+                        </p>
+
+                        <div class="feedback-options">
+
+                            {% for rating in range(1, 6) %}
+
+                                <label>
+                                    <input
+                                        type="radio"
+                                        name="q{{ question_number }}"
+                                        value="{{ rating }}"
+                                        required
+                                    >
+                                    {{ rating }}
+                                </label>
+
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </section>
+
+            <!-- TWO OPEN-ENDED QUESTIONS -->
+            <section class="feedback-card">
+
+                <h2>Additional Comments</h2>
+
+                <div class="feedback-question">
+
+                    <p>
+                        <strong>
+                            11. What did you like most about
+                            the application?
+                        </strong>
+                    </p>
+
+                    <textarea
+                        class="feedback-textarea"
+                        name="positive_feedback"
+                        maxlength="1000"
+                        placeholder="Write your answer here..."
+                    ></textarea>
+
+                </div>
+
+                <div class="feedback-question">
+
+                    <p>
+                        <strong>
+                            12. What improvements would you
+                            suggest for the application?
+                        </strong>
+                    </p>
+
+                    <textarea
+                        class="feedback-textarea"
+                        name="improvement_feedback"
+                        maxlength="1000"
+                        placeholder="Write your answer here..."
+                    ></textarea>
+
+                </div>
+
+            </section>
+
+            <button type="submit" class="feedback-submit">
+                Submit Feedback
+            </button>
+
+        </form>
+
+    </main>
+
+</body>
+</html>

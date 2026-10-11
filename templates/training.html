@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,13 +7,11 @@
 
     <title>Cybersecurity Training</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<body>
+<body class="training-page">
 
 <nav>
     <a href="/">Home</a>
@@ -22,207 +21,614 @@
     <a href="/logout">Logout</a>
 </nav>
 
-
 <div class="container training-container">
 
     <h1>Cybersecurity Training</h1>
 
     <p>
-        Review the training topics below before completing the cybersecurity
-        quizzes. These topics will help you recognise common cyber threats
-        and use safer online practices.
+        Explore the nine cybersecurity training topics below.
+        Select <strong>Read Lesson</strong> to learn more about each topic
+        before attempting the quizzes.
     </p>
 
+    <p>
+        The quizzes use real-life scenarios, so focus on understanding
+        how to apply the security advice.
+    </p>
 
     <div class="training-grid">
 
+        <!-- TOPIC 1 -->
+
         <div class="training-card">
+
             <h2>1. Phishing Awareness</h2>
 
-            <p>
-                Phishing is a cyberattack where criminals use fake emails,
-                messages or websites to trick people into revealing sensitive
-                information such as passwords, banking details or personal
-                information.
+            <p class="training-intro">
+                Learn to recognise suspicious messages, misleading links
+                and fraudulent websites.
             </p>
 
-            <p>
-                Warning signs can include unexpected requests for personal
-                information, suspicious links, unusual attachments and
-                messages that create urgency.
-            </p>
+            <details class="training-details">
+                <summary>Read Lesson</summary>
 
-            <p>
-                Avoid clicking suspicious links and verify unexpected
-                requests before providing sensitive information.
-            </p>
+                <div class="training-lesson">
+
+                    <h3>What is phishing?</h3>
+
+                    <p>
+                        Phishing is a cyberattack in which criminals use
+                        deceptive emails, text messages or websites to
+                        trick people into revealing passwords, financial
+                        details or other sensitive information.
+                    </p>
+
+                    <h3>Warning signs</h3>
+
+                    <p>
+                        Attackers often impersonate trusted organisations,
+                        such as universities, banks or employers. They may
+                        claim that an account will be suspended unless
+                        the recipient acts immediately.
+                    </p>
+
+                    <p>
+                        A message can display a familiar name or logo
+                        while directing you to a fraudulent website.
+                        On a computer, hovering over a link may reveal
+                        its real destination.
+                    </p>
+
+                    <p>
+                        Be cautious with attachments. A filename ending
+                        in <strong>.pdf.exe</strong> is an executable
+                        program, not an ordinary PDF document.
+                    </p>
+
+                    <h3>How to stay safe</h3>
+
+                    <p>
+                        Open the organisation's official website
+                        independently or contact it through a trusted
+                        channel. Do not follow suspicious links.
+                    </p>
+
+                    <p>
+                        If you have entered a password on a suspected
+                        phishing website, change it through the
+                        legitimate service and report the incident.
+                    </p>
+
+                </div>
+            </details>
+
         </div>
 
 
+        <!-- TOPIC 2 -->
+
         <div class="training-card">
-            <h2>2. Password & Account Security</h2>
 
-            <p>
-                Strong passwords help protect online accounts from
-                unauthorised access. Passwords should be difficult to guess
-                and should not contain easily identified personal information.
+            <h2>2. Password &amp; Account Security</h2>
+
+            <p class="training-intro">
+                Protect your accounts using unique passwords,
+                password managers and secure recovery methods.
             </p>
 
-            <p>
-                Different passwords should be used for different accounts.
-                This limits the damage if one password becomes compromised.
-            </p>
+            <details class="training-details">
+                <summary>Read Lesson</summary>
 
-            <p>
-                A password manager can also help users create and manage
-                different passwords securely.
-            </p>
+                <div class="training-lesson">
+
+                    <h3>Strong passwords</h3>
+
+                    <p>
+                        Strong passwords should be long, difficult to
+                        predict and unique to each account. Avoid names,
+                        birthdays and simple patterns.
+                    </p>
+
+                    <p>
+                        Reusing passwords is dangerous. If one website
+                        suffers a data breach, attackers may try the
+                        stolen password on your other accounts.
+                    </p>
+
+                    <h3>Password managers and passkeys</h3>
+
+                    <p>
+                        A reputable password manager can generate and
+                        securely store different passwords.
+                    </p>
+
+                    <p>
+                        Some services offer <strong>passkeys</strong>,
+                        which use cryptographic authentication instead
+                        of traditional passwords and resist many common
+                        phishing attacks.
+                    </p>
+
+                    <h3>Account recovery</h3>
+
+                    <p>
+                        If a service warns that your password appeared
+                        in a breach, change it and check whether you
+                        reused it elsewhere.
+                    </p>
+
+                    <p>
+                        Store account recovery codes securely and
+                        separately from your usual sign-in method.
+                    </p>
+
+                </div>
+            </details>
+
         </div>
 
 
+        <!-- TOPIC 3 -->
+
         <div class="training-card">
+
             <h2>3. Multi-Factor Authentication</h2>
 
-            <p>
-                Multi-factor authentication (MFA) adds another layer of
-                security to an account by requiring additional verification
-                as well as a password.
+            <p class="training-intro">
+                Understand how MFA protects accounts and how to
+                recognise suspicious login requests.
             </p>
 
-            <p>
-                For example, a user may be asked to confirm a login using an
-                authentication app or another verification method.
-            </p>
+            <details class="training-details">
+                <summary>Read Lesson</summary>
 
-            <p>
-                MFA can help protect an account even if its password has
-                been compromised.
-            </p>
+                <div class="training-lesson">
+
+                    <h3>What is MFA?</h3>
+
+                    <p>
+                        Multi-factor authentication (MFA) adds another
+                        layer of security by requiring additional
+                        verification when signing in.
+                    </p>
+
+                    <p>
+                        For example, a user may need to approve a
+                        notification in an authentication app or enter
+                        a temporary verification code.
+                    </p>
+
+                    <h3>Unexpected login requests</h3>
+
+                    <p>
+                        MFA reduces the risk that a stolen password
+                        alone will allow an attacker to access an
+                        account. However, unexpected verification
+                        requests should never be approved.
+                    </p>
+
+                    <p>
+                        Attackers may repeatedly send login approval
+                        notifications, hoping that the user approves
+                        one out of frustration. This is called
+                        <strong>MFA fatigue</strong>.
+                    </p>
+
+                    <h3>How to stay safe</h3>
+
+                    <p>
+                        Reject login requests you did not initiate.
+                        Check your account for suspicious activity
+                        and report repeated unexpected requests.
+                    </p>
+
+                </div>
+            </details>
+
         </div>
 
 
+        <!-- TOPIC 4 -->
+
         <div class="training-card">
+
             <h2>4. Social Engineering</h2>
 
-            <p>
-                Social engineering involves manipulating people into
-                revealing information or performing unsafe actions.
+            <p class="training-intro">
+                Identify impersonation, manipulation and attempts
+                to gain unauthorised access.
             </p>
 
-            <p>
-                Attackers may impersonate trusted people or organisations and
-                use urgency, fear, curiosity or trust to influence a victim.
-            </p>
+            <details class="training-details">
+                <summary>Read Lesson</summary>
 
-            <p>
-                Unusual requests should be verified independently before
-                sensitive information is provided or an action is taken.
-            </p>
+                <div class="training-lesson">
+
+                    <h3>What is social engineering?</h3>
+
+                    <p>
+                        Social engineering involves manipulating people
+                        into revealing confidential information,
+                        providing access or performing unsafe actions.
+                    </p>
+
+                    <p>
+                        Attackers may pretend to be IT support staff,
+                        managers or other trusted individuals.
+                        They may use urgency, authority, fear or
+                        attractive rewards.
+                    </p>
+
+                    <h3>Common examples</h3>
+
+                    <p>
+                        Someone claiming to be from IT support might
+                        ask you to install remote-access software.
+                        Another attacker may impersonate a manager
+                        and demand confidential records.
+                    </p>
+
+                    <p>
+                        <strong>Tailgating</strong> occurs when someone
+                        enters a restricted area by following an
+                        authorised person through a secure door.
+                    </p>
+
+                    <p>
+                        Attackers may also build trust gradually,
+                        collecting small pieces of information that
+                        support a later attack.
+                    </p>
+
+                    <h3>How to stay safe</h3>
+
+                    <p>
+                        Verify unusual requests using trusted
+                        procedures. Never share passwords,
+                        recovery codes or confidential records
+                        simply because someone claims authority.
+                    </p>
+
+                </div>
+            </details>
+
         </div>
 
 
+        <!-- TOPIC 5 -->
+
         <div class="training-card">
-            <h2>5. Malware & Ransomware</h2>
 
-            <p>
-                Malware is malicious software designed to damage systems,
-                steal information or interfere with normal computer
-                operations.
+            <h2>5. Malware &amp; Ransomware</h2>
+
+            <p class="training-intro">
+                Learn how malicious software spreads and how to
+                protect and recover important files.
             </p>
 
-            <p>
-                Ransomware is a type of malware that can lock or encrypt data
-                and demand payment from the victim.
-            </p>
+            <details class="training-details">
+                <summary>Read Lesson</summary>
 
-            <p>
-                Avoid suspicious downloads and attachments, and keep software
-                updated to reduce the risk of malware infections.
-            </p>
+                <div class="training-lesson">
+
+                    <h3>Understanding malware</h3>
+
+                    <p>
+                        Malware is malicious software that may steal
+                        information, damage files or interfere with
+                        computer operations.
+                    </p>
+
+                    <p>
+                        Ransomware is a type of malware that can
+                        encrypt files or block access to systems
+                        and demand payment. Paying does not
+                        guarantee recovery.
+                    </p>
+
+                    <h3>How infections happen</h3>
+
+                    <p>
+                        Malware can arrive through suspicious downloads,
+                        unexpected attachments, compromised websites
+                        or unwanted software bundled with installers.
+                    </p>
+
+                    <p>
+                        Security software may place suspicious files
+                        into <strong>quarantine</strong> to prevent
+                        them from running. Do not restore quarantined
+                        files without trusted guidance.
+                    </p>
+
+                    <h3>Backups and recovery</h3>
+
+                    <p>
+                        Regular backups help restore important data.
+                        However, backups permanently connected to an
+                        infected computer may also be encrypted.
+                    </p>
+
+                    <p>
+                        Keep appropriately protected backup copies
+                        and test that files can actually be restored.
+                    </p>
+
+                    <p>
+                        If ransomware is suspected, disconnect the
+                        affected device from networks where safe
+                        and report the incident promptly.
+                    </p>
+
+                </div>
+            </details>
+
         </div>
 
 
+        <!-- TOPIC 6 -->
+
         <div class="training-card">
-            <h2>6. Safe Browsing & Email Security</h2>
 
-            <p>
-                Websites, links, downloads and email attachments should be
-                treated carefully, particularly when they are unexpected.
+            <h2>6. Safe Browsing &amp; Email Security</h2>
+
+            <p class="training-intro">
+                Check websites, links, attachments and email
+                recipients before sharing information.
             </p>
 
-            <p>
-                Check website addresses before entering sensitive information
-                and verify unexpected messages or attachments before opening
-                them.
-            </p>
+            <details class="training-details">
+                <summary>Read Lesson</summary>
 
-            <p>
-                Avoid downloading files from unknown or untrusted sources.
-            </p>
+                <div class="training-lesson">
+
+                    <h3>Website safety</h3>
+
+                    <p>
+                        Criminals can create convincing copies of
+                        legitimate websites. Always check the
+                        actual website address and organisation.
+                    </p>
+
+                    <p>
+                        HTTPS indicates an encrypted connection,
+                        but a padlock does not prove that a website
+                        or seller is trustworthy.
+                    </p>
+
+                    <p>
+                        Do not ignore browser warnings about invalid
+                        security certificates when entering
+                        sensitive information.
+                    </p>
+
+                    <h3>Suspicious links and pop-ups</h3>
+
+                    <p>
+                        Shortened links can hide their destination.
+                        When uncertain, visit the intended website
+                        independently.
+                    </p>
+
+                    <p>
+                        Fake technical support pop-ups may claim
+                        that your computer is infected and tell
+                        you to call a number or install software.
+                        Close the suspicious page and use trusted
+                        security tools instead.
+                    </p>
+
+                    <h3>Email safety</h3>
+
+                    <p>
+                        Before sending an email, check the recipients.
+                        Choose <strong>Reply</strong> rather than
+                        <strong>Reply All</strong> when the information
+                        should not go to everyone.
+                    </p>
+
+                </div>
+            </details>
+
         </div>
 
 
+        <!-- TOPIC 7 -->
+
         <div class="training-card">
-            <h2>7. Online Privacy & Personal Data</h2>
 
-            <p>
-                Personal information shared online can be used by criminals
-                for scams, impersonation and other attacks.
+            <h2>7. Online Privacy &amp; Personal Data</h2>
+
+            <p class="training-intro">
+                Reduce unnecessary sharing and protect your
+                personal information online.
             </p>
 
-            <p>
-                Users should consider what information they share publicly
-                and review the privacy settings of their online accounts.
-            </p>
+            <details class="training-details">
+                <summary>Read Lesson</summary>
 
-            <p>
-                Sensitive information such as passwords, financial details
-                and identification information should not be shared with
-                unknown or unverified people.
-            </p>
+                <div class="training-lesson">
+
+                    <h3>Personal information risks</h3>
+
+                    <p>
+                        Information shared online can be misused
+                        for fraud, impersonation and targeted scams.
+                    </p>
+
+                    <p>
+                        Public birthdays, schools, workplaces and
+                        pet names may help attackers create convincing
+                        messages or guess account recovery answers.
+                    </p>
+
+                    <h3>Privacy settings</h3>
+
+                    <p>
+                        Review social media privacy settings to
+                        control who can view your profile,
+                        photographs and posts.
+                    </p>
+
+                    <h3>App permissions</h3>
+
+                    <p>
+                        Applications may request access to contacts,
+                        cameras, microphones or location information.
+                        Only allow permissions genuinely needed
+                        for the application's purpose.
+                    </p>
+
+                    <p>
+                        A navigation app may need your location
+                        while in use, but not necessarily when
+                        it is closed.
+                    </p>
+
+                    <h3>Data minimisation</h3>
+
+                    <p>
+                        <strong>Data minimisation</strong> means
+                        collecting or sharing only the information
+                        necessary for a particular purpose.
+                    </p>
+
+                    <p>
+                        Question requests for personal details
+                        that do not seem relevant to the service.
+                    </p>
+
+                </div>
+            </details>
+
         </div>
 
 
+        <!-- TOPIC 8 -->
+
         <div class="training-card">
-            <h2>8. Public Wi-Fi & Network Safety</h2>
 
-            <p>
-                Public Wi-Fi networks can present security risks because users
-                may not know who operates the network or who else is connected
-                to it.
+            <h2>8. Public Wi-Fi &amp; Network Safety</h2>
+
+            <p class="training-intro">
+                Recognise fake hotspots and protect your
+                information on unfamiliar networks.
             </p>
 
-            <p>
-                Avoid performing sensitive activities on networks that you do
-                not trust, particularly when entering passwords or financial
-                information.
-            </p>
+            <details class="training-details">
+                <summary>Read Lesson</summary>
 
-            <p>
-                Check that you are connecting to the correct network and use
-                trusted connections when handling sensitive information.
-            </p>
+                <div class="training-lesson">
+
+                    <h3>Public Wi-Fi risks</h3>
+
+                    <p>
+                        Attackers can create fake hotspots with
+                        names similar to those used by cafes,
+                        hotels or other public locations.
+                    </p>
+
+                    <p>
+                        Confirm the official network name with
+                        staff or another trusted source.
+                        A strong signal does not prove legitimacy.
+                    </p>
+
+                    <h3>Automatic connections</h3>
+
+                    <p>
+                        Disable automatic connections to
+                        untrusted networks. Otherwise, your
+                        device may connect to an impersonated
+                        hotspot without your knowledge.
+                    </p>
+
+                    <h3>Protecting your information</h3>
+
+                    <p>
+                        Avoid unnecessary file sharing on
+                        public networks because other devices
+                        may discover shared resources.
+                    </p>
+
+                    <p>
+                        Be suspicious if a public Wi-Fi login
+                        page unexpectedly requests your main
+                        email password or sensitive credentials.
+                    </p>
+
+                    <p>
+                        Prefer trusted connections for sensitive
+                        work and use your organisation's
+                        approved security controls.
+                    </p>
+
+                </div>
+            </details>
+
         </div>
 
 
+        <!-- TOPIC 9 -->
+
         <div class="training-card">
-            <h2>9. Device & Software Security</h2>
 
-            <p>
-                Keeping devices and software secure reduces the risk of
-                attackers exploiting known security weaknesses.
+            <h2>9. Device &amp; Software Security</h2>
+
+            <p class="training-intro">
+                Secure your devices with updates, access
+                controls and protection against data loss.
             </p>
 
-            <p>
-                Operating systems, applications and security software should
-                be kept updated when security updates become available.
-            </p>
+            <details class="training-details">
+                <summary>Read Lesson</summary>
 
-            <p>
-                Devices should also be protected with appropriate access
-                controls, such as a password, PIN or other secure locking
-                method.
-            </p>
+                <div class="training-lesson">
+
+                    <h3>Security updates</h3>
+
+                    <p>
+                        Operating systems and applications
+                        should receive security updates
+                        promptly. Automatic updates reduce
+                        exposure to known vulnerabilities.
+                    </p>
+
+                    <p>
+                        A device that has not been used for
+                        several months may have missed important
+                        security patches. Update it before
+                        using it for sensitive activities.
+                    </p>
+
+                    <h3>Access permissions</h3>
+
+                    <p>
+                        Install software from trusted sources.
+                        Be cautious when applications request
+                        administrator privileges because these
+                        provide greater control over a device.
+                    </p>
+
+                    <h3>Protecting lost devices</h3>
+
+                    <p>
+                        Use a strong screen lock, PIN or password.
+                        <strong>Full-disk encryption</strong>
+                        protects stored information against
+                        unauthorised reading if a device is lost
+                        or stolen.
+                    </p>
+
+                    <p>
+                        Device-location and remote-lock features
+                        can help protect information when a
+                        smartphone or laptop goes missing.
+                    </p>
+
+                </div>
+            </details>
+
         </div>
 
     </div>
@@ -233,8 +639,15 @@
         <h2>Ready to Test Your Knowledge?</h2>
 
         <p>
-            After reviewing the training topics, visit the Quiz Centre
-            and choose a cybersecurity quiz.
+            Once you have reviewed the lessons, visit the
+            Quiz Centre and test your knowledge using
+            realistic cybersecurity scenarios.
+        </p>
+
+        <p>
+            To qualify for the Certificate of Completion,
+            complete all nine quizzes and achieve at least
+            70% in each quiz.
         </p>
 
         <a href="/quizzes">
@@ -245,12 +658,10 @@
 
 </div>
 
-
 <footer>
     <p>Cybersecurity Awareness and Training Application</p>
     <p>Developed as part of the COM6301 Development Project</p>
 </footer>
-
 
 </body>
 </html>

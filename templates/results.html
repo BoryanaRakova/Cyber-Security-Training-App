@@ -88,7 +88,7 @@
 
         {% if item.is_correct %}
 
-            <p>
+            <p class="correct">
                 <strong>Correct</strong>
             </p>
 
@@ -99,7 +99,7 @@
 
         {% else %}
 
-            <p>
+            <p class="incorrect">
                 <strong>Incorrect</strong>
             </p>
 
@@ -108,11 +108,10 @@
                 {{ item.selected_answer }}
             </p>
 
-            <p>
-                <strong>Correct answer:</strong>
-                {{ item.correct_answer }}
-            </p>
-
+ <p class="correct-answer">
+    <strong>Correct answer:</strong>
+    {{ item.correct_answer }}
+</p>
         {% endif %}
 
 

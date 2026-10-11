@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Completion</title>
+
+    <style>
+        body {
+            margin: 0;
+            background-color: #0f172a;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .certificate {
+            position: relative;
+            width: 1000px;
+            height: 700px;
+            margin: 40px auto;
+
+            background-image: url("{{ url_for('static', filename='images/certificate.png') }}");
+            background-size: cover;
+            background-position: center;
+
+            border: 3px solid #38bdf8;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
+        }
+
+       
+.certificate-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+
+    color: #ffffff;
+    text-align: center;
+
+    background: rgba(2, 6, 23, 0.78);
+    padding: 30px;
+    border-radius: 12px;
+
+    border: 1px solid rgba(56, 189, 248, 0.6);
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
+}
+
+.certificate-content h1 {
+    font-size: 38px;
+    color: #38bdf8;
+    margin-bottom: 20px;
+    text-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+.certificate-content h2 {
+    font-size: 36px;
+    color: #7dd3fc;
+    margin: 20px 0;
+}
+
+.certificate-content p {
+    font-size: 19px;
+    line-height: 1.6;
+    color: #f1f5f9;
+}
+
+
+        .certificate-actions {
+            margin: 20px auto 40px;
+        }
+
+        .certificate-actions button {
+            padding: 14px 30px;
+            background-color: #38bdf8;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            
+        .certificate {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            border: none;
+            box-shadow: none;
+
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+
+            .certificate-actions {
+                display: none;
+            }
+
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="certificate">
+
+        <div class="certificate-content">
+
+            <h1>Certificate of Completion</h1>
+
+            <p>This certificate is proudly presented to</p>
+
+            <h2>{{ username }}</h2>
+
+            
+                <p>
+                    In recognition of successfully completing the
+                    Cybersecurity Awareness and Training Programme,
+                    including all nine cybersecurity quizzes,
+                    with a minimum score of 70% achieved in each quiz.
+                </p>
+
+
+                <p>
+                    <strong>Overall Achievement: {{ "%.0f"|format(overall_percentage) }}%</strong>
+                </p>
+
+
+            <p>
+                Date: {{ completion_date }}
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="certificate-actions">
+        <button onclick="window.print()">
+            Print / Save as PDF
+        </button>
+    </div>
+
+</body>
+</html>

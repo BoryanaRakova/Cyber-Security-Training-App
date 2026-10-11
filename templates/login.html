@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
-<body>
+<body class="login-page">
 
     <nav>
         <a href="/">Home</a>
@@ -18,10 +19,15 @@
     </nav>
 
     <div class="container">
+
         <h1>Login</h1>
 
         {% if success %}
             <p>{{ success }}</p>
+        {% endif %}
+
+        {% if message %}
+            <p class="login-message">{{ message }}</p>
         {% endif %}
 
         {% if error %}
@@ -29,6 +35,7 @@
         {% endif %}
 
         <form method="POST">
+
             <input
                 type="text"
                 name="username"
@@ -48,13 +55,16 @@
             <br>
 
             <button type="submit">Login</button>
+
         </form>
+
     </div>
 
     <footer>
-    <p>Cybersecurity Awareness and Training Application</p>
-    <p>Developed as part of the COM6301 Development Project</p>
-</footer>
+        <p>Cybersecurity Awareness and Training Application</p>
+        <p>Developed as part of the COM6301 Development Project</p>
+    </footer>
 
 </body>
+
 </html>

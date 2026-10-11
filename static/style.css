@@ -1,78 +1,168 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+
+/* =========================
+   Navigation
+   ========================= */
+
 nav {
-    background-color: #1e293b;
+    background-color: rgba(30, 41, 59, 0.96);
     padding: 20px;
     text-align: center;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.2);
 }
 
 nav a {
-    color: white;
+    color: #e2e8f0;
     text-decoration: none;
     margin: 20px;
-    font-size: 20px;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: color 0.2s ease;
 }
+
+nav a:hover {
+    color: #7dd3fc;
+}
+
+
+/* =========================
+   Main Page
+   ========================= */
 
 body {
     background-color: #0f172a;
-    color: white;
-    font-family: Arial, sans-serif;
+    color: #f8fafc;
+    font-family: "Rajdhani", sans-serif;
     margin: 0;
     padding: 0;
 }
 
 .container {
     text-align: center;
-    margin-top: 150px;
+    margin-top: 120px;
+    padding: 0 20px;
 }
+
+
+/* =========================
+   Main Headings
+   ========================= */
 
 h1 {
-    font-size: 50px;
-    color: #38bdf8;
+    font-family: "Share Tech Mono", monospace;
+    font-size: 48px;
+    color: #7dd3fc;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
+h2 {
+    font-family: "Share Tech Mono", monospace;
+    font-weight: 400;
+}
+
+
+/* =========================
+   Paragraphs
+   ========================= */
+
 p {
-    font-size: 20px;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: 0.3px;
+    color: #e2e8f0;
     margin-top: 20px;
 }
 
+
+/* =========================
+   Buttons
+   ========================= */
+
 button {
     margin-top: 30px;
-    padding: 15px 30px;
+    padding: 14px 30px;
     background-color: #38bdf8;
+    color: #0f172a;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
+    font-family: "Rajdhani", sans-serif;
     font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
     cursor: pointer;
+    transition: 0.2s ease;
 }
 
+button:hover {
+    background-color: #7dd3fc;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(56, 189, 248, 0.25);
+}
+
+
+/* =========================
+   Question Cards
+   ========================= */
+
 .question-card {
-    background-color: #1e293b;
+    background-color: rgba(30, 41, 59, 0.95);
     padding: 20px;
     margin: 20px auto;
     width: 60%;
     border-radius: 10px;
     text-align: left;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
+
+
+/* =========================
+   Labels
+   ========================= */
 
 label {
+    font-family: "Rajdhani", sans-serif;
     font-size: 18px;
-    line-height: 1.5;
+    font-weight: 500;
+    line-height: 1.6;
+    color: #e2e8f0;
 }
 
 
-/* Text input fields */
+/* =========================
+   Text Input Fields
+   ========================= */
 
 input:not([type="radio"]) {
     padding: 12px;
     width: 300px;
     border-radius: 8px;
     border: 2px solid #38bdf8;
-    font-size: 16px;
-    background-color: white;
-    color: black;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    background-color: #f8fafc;
+    color: #0f172a;
+    outline: none;
+}
+
+input:not([type="radio"]):focus {
+    border-color: #7dd3fc;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
 }
 
 
-/* Quiz radio buttons */
+/* =========================
+   Quiz Radio Buttons
+   ========================= */
 
 input[type="radio"] {
     width: auto;
@@ -82,7 +172,9 @@ input[type="radio"] {
 }
 
 
-/* Quiz Centre */
+/* =========================
+   Quiz Centre
+   ========================= */
 
 .quiz-container {
     margin-top: 70px;
@@ -93,7 +185,6 @@ input[type="radio"] {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
-
     max-width: 1100px;
     margin: 40px auto;
     padding: 0 20px;
@@ -104,7 +195,6 @@ input[type="radio"] {
     min-height: 280px;
     margin: 0;
     padding: 25px;
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -112,14 +202,20 @@ input[type="radio"] {
 }
 
 .quiz-card h2 {
-    color: #38bdf8;
+    font-family: "Share Tech Mono", monospace;
+    color: #7dd3fc;
     font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
     margin-top: 0;
 }
 
 .quiz-card p {
-    font-size: 16px;
-    line-height: 1.5;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.6;
+    color: #cbd5e1;
 }
 
 .quiz-card button {
@@ -127,41 +223,49 @@ input[type="radio"] {
 }
 
 
-/* Dashboard Quiz Progress */
+/* =========================
+   Dashboard Quiz Progress
+   ========================= */
 
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
-
     max-width: 1100px;
     margin: 30px auto;
     padding: 0 20px;
 }
 
 .dashboard-card {
-    background-color: #1e293b;
-    border-radius: 10px;
     padding: 25px;
     text-align: left;
 }
 
 .dashboard-card h2 {
-    color: #38bdf8;
-    font-size: 22px;
+    font-family: "Share Tech Mono", monospace;
+    color: #7dd3fc;
+    font-size: 23px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
     margin-top: 0;
 }
 
 .dashboard-card p {
-    font-size: 16px;
-    line-height: 1.5;
+    font-family: "Rajdhani", sans-serif;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.6;
+    color: #cbd5e1;
 }
 
 .dashboard-card button {
     margin-top: 10px;
 }
 
-/* Training Page */
+
+/* =========================
+   Training Page
+   ========================= */
 
 .training-container {
     margin-top: 70px;
@@ -172,28 +276,88 @@ input[type="radio"] {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 25px;
-
     max-width: 1100px;
     margin: 40px auto;
     padding: 0 20px;
 }
 
 .training-card {
-    background-color: #1e293b;
-    border-radius: 10px;
     padding: 25px;
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    min-height: 260px;
+    box-sizing: border-box;
 }
 
 .training-card h2 {
-    color: #38bdf8;
+    font-family: "Share Tech Mono", monospace;
+    color: #7dd3fc;
     font-size: 24px;
-    margin-top: 0;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    margin: 0 0 12px;
 }
 
 .training-card p {
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: 17px;
+    line-height: 1.6;
+    color: #cbd5e1;
+    margin: 0 0 15px;
+}
+
+.training-details {
+    margin-top: auto;
+}
+
+.training-details summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgba(56, 189, 248, 0.10);
+    border: 1px solid rgba(125, 211, 252, 0.35);
+    border-radius: 8px;
+    color: #7dd3fc;
+    font-family: "Share Tech Mono", monospace;
+    cursor: pointer;
+    list-style: none;
+}
+
+.training-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.training-details summary::after {
+    content: "+";
+    font-size: 22px;
+}
+
+.training-details[open] summary::after {
+    content: "−";
+}
+
+.training-details summary:hover {
+    background: rgba(56, 189, 248, 0.20);
+}
+
+.training-details summary:focus-visible {
+    outline: 2px solid #7dd3fc;
+    outline-offset: 3px;
+}
+
+.training-lesson {
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(125, 211, 252, 0.25);
+}
+
+.training-lesson h3 {
+    font-family: "Share Tech Mono", monospace;
+    color: #7dd3fc;
+    font-size: 18px;
+    font-weight: 400;
+    margin: 20px 0 8px;
 }
 
 .training-ready {
@@ -201,38 +365,224 @@ input[type="radio"] {
     text-align: center;
 }
 
-/* Tablet */
+
+/* =========================
+   Shared Card Design
+   ========================= */
+
+.quiz-card,
+.dashboard-card,
+.training-card {
+    background-color: rgba(30, 41, 59, 0.95);
+    border-radius: 10px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.quiz-card:hover,
+.dashboard-card:hover,
+.training-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(125, 211, 252, 0.45);
+}
+
+
+/* =========================
+   Footer
+   ========================= */
+
+footer {
+    background-color: rgba(30, 41, 59, 0.96);
+    text-align: center;
+    padding: 25px 20px;
+    margin-top: 80px;
+    border-top: 1px solid rgba(56, 189, 248, 0.15);
+}
+
+footer p {
+    font-family: "Rajdhani", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    margin: 5px 0;
+    color: #cbd5e1;
+}
+
+
+/* =========================
+   Home Page Background
+   ========================= */
+
+.home-page {
+    background:
+        linear-gradient(
+            rgba(8, 15, 30, 0.78),
+            rgba(8, 15, 30, 0.88)
+        ),
+        url("/static/images/cybersecurity.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   Individual Quiz Background
+   ========================= */
+
+.quiz-page {
+    background:
+        linear-gradient(
+            rgba(8, 15, 30, 0.72),
+            rgba(8, 15, 30, 0.82)
+        ),
+        url("/static/images/cyber3.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+.quiz-page .question-card {
+    background-color: rgba(30, 41, 59, 0.88);
+    backdrop-filter: blur(3px);
+}
+
+
+/* =========================
+   Quiz Result Correct / Incorrect
+   ========================= */
+
+.correct {
+    color: #22c55e;
+    font-weight: 700;
+}
+
+.incorrect {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.correct-answer {
+    color: #86efac;
+    font-weight: 600;
+}
+
+
+/* =========================
+   Login and Registration Background
+   ========================= */
+
+body.auth-page {
+    background-image:
+        linear-gradient(
+            rgba(8, 15, 30, 0.62),
+            rgba(8, 15, 30, 0.78)
+        ),
+        url("/static/images/login-background.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   Dashboard Background
+   ========================= */
+
+.dashboard-page {
+    background:
+        linear-gradient(
+            rgba(8, 15, 30, 0.88),
+            rgba(8, 15, 30, 0.94)
+        ),
+        url("/static/images/cybersecurity.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   Training Background
+   ========================= */
+
+.training-page {
+    background:
+        linear-gradient(
+            rgba(8, 15, 30, 0.88),
+            rgba(8, 15, 30, 0.94)
+        ),
+        url("/static/images/cybersecurity.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   Quiz Centre Background
+   ========================= */
+
+.quizzes-page {
+    background:
+        linear-gradient(
+            rgba(8, 15, 30, 0.88),
+            rgba(8, 15, 30, 0.94)
+        ),
+        url("/static/images/cybersecurity.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   Tablet
+   ========================= */
 
 @media (max-width: 900px) {
 
-    .quiz-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .dashboard-grid {
+    .quiz-grid,
+    .dashboard-grid,
+    .training-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
     .question-card {
         width: 75%;
-
-    }
-
-    .training-grid {
-    grid-template-columns: repeat(2, 1fr);
     }
 }
 
 
-/* Mobile */
+/* =========================
+   Mobile
+   ========================= */
 
 @media (max-width: 600px) {
 
-    .quiz-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-grid {
+    .quiz-grid,
+    .dashboard-grid,
+    .training-grid {
         grid-template-columns: 1fr;
     }
 
@@ -249,22 +599,81 @@ input[type="radio"] {
         font-size: 36px;
     }
 
-    .training-grid {
-    grid-template-columns: 1fr;
+    .container {
+        margin-top: 80px;
+    }
+
+    input:not([type="radio"]) {
+        width: 85%;
+        max-width: 300px;
+    }
+
+    .training-card h2 {
+        font-size: 21px;
     }
 }
 
 
-/* Footer */
+/* =========================
+   Login Page Background
+   ========================= */
 
-footer {
-    background-color: #1e293b;
-    text-align: center;
-    padding: 25px 20px;
-    margin-top: 80px;
+body.login-page {
+    background:
+        linear-gradient(
+            rgba(8, 15, 30, 0.65),
+            rgba(8, 15, 30, 0.82)
+        ),
+        url("/static/images/user1.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
 }
 
-footer p {
-    font-size: 14px;
-    margin: 5px 0;
+
+/* =========================
+   Dashboard Summary Cards
+   ========================= */
+
+.dashboard-summary {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    max-width: 1100px;
+    margin: 35px auto 50px;
+    padding: 0 20px;
+}
+
+.dashboard-summary .question-card {
+    width: auto;
+    margin: 0;
+    padding: 30px;
+    background-color: rgba(30, 41, 59, 0.92);
+    border: 2px solid rgba(56, 189, 248, 0.85);
+    border-radius: 12px;
+    box-shadow:
+        0 0 15px rgba(56, 189, 248, 0.25),
+        0 0 35px rgba(56, 189, 248, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    text-align: left;
+}
+
+.dashboard-summary .question-card h2 {
+    color: #38bdf8;
+    font-family: "Share Tech Mono", monospace;
+    font-size: 24px;
+    border-bottom: 2px solid rgba(56, 189, 248, 0.7);
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+}
+
+@media (max-width: 700px) {
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+    }
 }

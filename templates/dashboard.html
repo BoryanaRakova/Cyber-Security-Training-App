@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,9 +13,7 @@
     >
 </head>
 
-
-
-<body>
+<body class="dashboard-page">
 
 <nav>
     <a href="/">Home</a>
@@ -23,7 +22,6 @@
     <a href="/dashboard">Dashboard</a>
     <a href="/logout">Logout</a>
 </nav>
-
 
 <div class="container">
 
@@ -35,96 +33,175 @@
         Track your progress across the cybersecurity awareness quizzes.
     </p>
 
+    <!-- Dashboard Summary: Progress and Certificate -->
 
-    <div class="question-card">
+    <div class="dashboard-summary">
 
-        <h2>Your Progress</h2>
+        <!-- Your Progress -->
 
-        <p>
-            <strong>Quizzes Completed:</strong>
-            {{ completed_quizzes }} / {{ total_quizzes }}
-        </p>
+        <div class="question-card">
 
-        {% if overall_percentage is not none %}
+            <h2>Your Progress</h2>
 
             <p>
-                <strong>Overall Best Score:</strong>
-                {{ total_best_points }} / {{ total_available_points }}
+                <strong>Quizzes Completed:</strong>
+                {{ completed_quizzes }} / {{ total_quizzes }}
             </p>
 
-            <p>
-                <strong>Overall Percentage:</strong>
-                {{ "%.0f"|format(overall_percentage) }}%
-            </p>
-
-        {% else %}
-
-            <p>
-                <strong>Overall Best Score:</strong>
-                Not completed
-            </p>
-
-            <p>
-                <strong>Overall Percentage:</strong>
-                Complete all quizzes to calculate your overall result.
-            </p>
-
-        {% endif %}
-
-    </div>
-
-
-    <h2>Quiz Progress</h2>
-
-
-    <div class="dashboard-grid">
-
-        {% for quiz in quiz_progress %}
-
-        <div class="dashboard-card">
-
-            <h2>{{ quiz.quiz_name }}</h2>
-
-            {% if quiz.best_percentage is not none %}
+            {% if overall_percentage is not none %}
 
                 <p>
-                    <strong>Best Score:</strong>
-                    {{ "%.0f"|format(quiz.best_percentage) }}%
+                    <strong>Overall Best Score:</strong>
+                    {{ total_best_points }} / {{ total_available_points }}
                 </p>
 
                 <p>
-                    <strong>Status:</strong>
-                    Completed
+                    <strong>Overall Percentage:</strong>
+                    {{ "%.0f"|format(overall_percentage) }}%
                 </p>
-
-                <a href="/quiz/{{ quiz.quiz_id }}">
-                    <button>Try Again</button>
-                </a>
 
             {% else %}
 
                 <p>
-                    <strong>Best Score:</strong>
+                    <strong>Overall Best Score:</strong>
                     Not completed
                 </p>
 
                 <p>
-                    <strong>Status:</strong>
-                    Not completed
+                    <strong>Overall Percentage:</strong>
+                    Complete all quizzes to calculate your overall result.
                 </p>
 
-                <a href="/quiz/{{ quiz.quiz_id }}">
-                    <button>Start Quiz</button>
+            {% endif %}
+
+        </div>
+
+        <!-- Certificate of Completion -->
+
+        <div class="question-card">
+
+            <h2>Certificate of Completion</h2>
+
+            {% if certificate_eligible %}
+
+                <p class="correct">
+                    Congratulations! You have completed all
+                    {{ total_quizzes }} quizzes and achieved
+                    at least 70% in every quiz.
+                </p>
+
+                <p>
+                    You are eligible to receive your
+                    Cybersecurity Awareness Certificate.
+                </p>
+
+                <a href="{{ url_for('certificate') }}">
+                    <button type="button">
+                        View / Download Certificate
+                    </button>
+                </a>
+
+            {% elif completed_quizzes == total_quizzes %}
+
+                <p>
+                    Congratulations! You have completed all
+                    {{ total_quizzes }} cybersecurity quizzes.
+                </p>
+
+                <p>
+                    Your certificate is not yet unlocked.
+                    You must achieve at least 70% in
+                    <strong>each individual quiz</strong>.
+                </p>
+
+                <p>
+                    Review your quiz scores below and retry
+                    any quiz where your best score is below 70%.
+                </p>
+
+                <a href="/quizzes">
+                    <button type="button">
+                        Improve Your Scores
+                    </button>
+                </a>
+
+            {% else %}
+
+                <p>Certificate Locked</p>
+
+                <p>
+                    You have completed {{ completed_quizzes }}
+                    out of {{ total_quizzes }} quizzes.
+                </p>
+
+                <p>
+                    Complete all quizzes and achieve at least
+                    70% in each quiz to unlock your certificate.
+                </p>
+
+                <a href="/quizzes">
+                    <button type="button">
+                        Continue Quizzes
+                    </button>
                 </a>
 
             {% endif %}
 
         </div>
 
+    </div>
+
+    <!-- Quiz Progress -->
+
+    <h2>Quiz Progress</h2>
+
+    <div class="dashboard-grid">
+
+        {% for quiz in quiz_progress %}
+
+            <div class="dashboard-card">
+
+                <h2>{{ quiz.quiz_name }}</h2>
+
+                {% if quiz.best_percentage is not none %}
+
+                    <p>
+                        <strong>Best Score:</strong>
+                        {{ "%.0f"|format(quiz.best_percentage) }}%
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        Completed
+                    </p>
+
+                    <a href="/quiz/{{ quiz.quiz_id }}">
+                        <button>Try Again</button>
+                    </a>
+
+                {% else %}
+
+                    <p>
+                        <strong>Best Score:</strong>
+                        Not completed
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        Not completed
+                    </p>
+
+                    <a href="/quiz/{{ quiz.quiz_id }}">
+                        <button>Start Quiz</button>
+                    </a>
+
+                {% endif %}
+
+            </div>
+
         {% endfor %}
 
     </div>
-
 
     <a href="/quizzes">
         <button>Go to Quiz Centre</button>
@@ -132,20 +209,10 @@
 
 </div>
 
-
-    
-
-</div>
-
-
 <footer>
     <p>Cybersecurity Awareness and Training Application</p>
     <p>Developed as part of the COM6301 Development Project</p>
 </footer>
-
-
-</body>
-</html>
 
 </body>
 </html>
