@@ -2058,56 +2058,41 @@ def certificate():
     )
 
 # --------------------------------------------------
-
-# --------------------------------------------------
-# ANONYMOUS EVALUATION FEEDBACK
+# RESEARCHER-ONLY FEEDBACK DASHBOARD
 # --------------------------------------------------
 
-@app.route("/feedback", methods=["GET", "POST"])
-def feedback():
-    if "username" not in session:
-        return redirect(url_for("login"))
+@app.route("/researcher-dashboard")
+def researcher_dashboard():
+    if session.get("user_id") != 8:
+        return "Access denied. Researcher only.", 403
 
-    if request.method == "POST":
-        if request.form.get("consent") != "yes":
-            return "Please confirm consent before submitting feedback.", 400
+    conn = sqlite3.connect("users.db")
+    conn.row_factory = sqlite3.Row
 
-        try:
-            ratings = [int(request.form.get(f"q{i}", "")) for i in range(1, 11)]
-        except (ValueError, TypeError):
-            return "Please answer all ten rating questions.", 400
+    responses = [
+        dict(row)
+        for row in conn.execute("""
+            SELECT *
+            FROM evaluation_feedback
+            ORDER BY submitted_at DESC, id DESC
+        """).fetchall()
+    ]
 
-        if any(rating < 1 or rating > 5 for rating in ratings):
-            return "Each rating must be between 1 and 5.", 400
+    conn.close()
 
-        positive = request.form.get("positive_feedback", "").strip()
-        improvements = request.form.get("improvement_feedback", "").strip()
-        if len(positive) > 1000 or len(improvements) > 1000:
-            return "Written feedback must be no longer than 1000 characters.", 400
+    question_averages = []
 
-        conn = sqlite3.connect("users.db")
-        try:
-            conn.execute("""
-                INSERT INTO evaluation_feedback (
-                    q1, q2, q3, q4, q5, q6, q7, q8, q9, q10,
-                    positive_feedback, improvement_feedback
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (*ratings, positive, improvements))
-            conn.commit()
-        finally:
-            conn.close()
+    for number in range(1, 11):
+        values = [response[f"q{number}"] for response in responses]
+        average = sum(values) / len(values) if values else 0
+        question_averages.append(round(average, 2))
 
-        return redirect(url_for("feedback_success"))
-
-    return render_template("feedback.html")
-
-
-@app.route("/feedback/success")
-def feedback_success():
-    if "username" not in session:
-        return redirect(url_for("login"))
-    return render_template("feedback_success.html")
-
+    return render_template(
+        "researcher_dashboard.html",
+        responses=responses,
+        total_responses=len(responses),
+        question_averages=question_averages
+    )
 
 # RUN APPLICATION
 
