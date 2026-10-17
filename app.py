@@ -1019,8 +1019,8 @@ def certificate():
 
 @app.route("/feedback", methods=["GET", "POST"])
 def feedback():
-    if "username" not in session:
-        return redirect(url_for("login"))
+
+    
     if request.method == "POST":
         if request.form.get("consent") != "yes":
             return "Please confirm consent before submitting feedback.", 400
@@ -1047,8 +1047,6 @@ def feedback():
 
 @app.route("/feedback/success")
 def feedback_success():
-    if "username" not in session:
-        return redirect(url_for("login"))
     return render_template("feedback_success.html")
 
 

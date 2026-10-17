@@ -677,3 +677,25 @@ body.login-page {
         grid-template-columns: 1fr;
     }
 }
+/* Dashboard Give Feedback Button */
+.feedback-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #0284c7, #38bdf8);
+    color: #ffffff;
+    padding: 14px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 25px;
+    border: 1px solid #7dd3fc;
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25);
+    transition: 0.2s ease;
+}
+
+.feedback-button:hover {
+    background: linear-gradient(135deg, #0369a1, #0ea5e9);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+}

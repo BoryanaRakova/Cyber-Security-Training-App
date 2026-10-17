@@ -36,6 +36,130 @@
         how to apply the security advice.
     </p>
 
+    <!-- Selected lesson appears here -->
+<div id="selected-lesson" class="selected-lesson" hidden>
+    <div class="selected-lesson-header">
+        <h2 id="selected-lesson-title"></h2>
+        <button type="button" id="close-lesson">Close ✕</button>
+    </div>
+
+    <div id="selected-lesson-content"></div>
+</div>
+
+<style>
+    .selected-lesson {
+        background: #142c48;
+        border: 1px solid #3b6388;
+        border-radius: 14px;
+        padding: 25px;
+        margin: 25px 0;
+    }
+
+    .selected-lesson[hidden] {
+        display: none;
+    }
+
+    .selected-lesson-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    #selected-lesson-content {
+        columns: 2;
+        column-gap: 35px;
+    }
+
+    #selected-lesson-content h3 {
+        break-after: avoid;
+    }
+
+    #selected-lesson-content p {
+        break-inside: avoid;
+    }
+
+    .training-grid .training-card {
+        align-self: start;
+    }
+
+    .training-grid .training-details .training-lesson {
+        display: none;
+    }
+
+    @media (max-width: 700px) {
+        #selected-lesson-content {
+            columns: 1;
+        }
+    }
+
+    /* Improve the selected lesson layout */
+#selected-lesson-content {
+    columns: 2;
+    column-gap: 45px;
+    text-align: left;
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+/* Make lesson section headings larger and blue */
+#selected-lesson-content h3 {
+    color: #38bdf8;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: left;
+    margin-top: 22px;
+    margin-bottom: 12px;
+    break-after: avoid;
+}
+
+/* Keep paragraphs neatly aligned */
+#selected-lesson-content p {
+    text-align: left;
+    margin-bottom: 16px;
+    break-inside: avoid;
+}
+
+/* Make the main lesson title blue */
+#selected-lesson-title {
+    color: #7dd3fc;
+    font-size: 28px;
+    text-align: left;
+}
+
+/* Keep one column on smaller screens */
+@media (max-width: 700px) {
+    #selected-lesson-content {
+        columns: 1;
+    }
+}
+#selected-lesson-content {
+    columns: unset;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 40px;
+    align-items: start;
+}
+
+#selected-lesson-content .lesson-section {
+    padding: 10px 15px;
+    text-align: left;
+}
+
+#selected-lesson-content .lesson-section h3 {
+    color: #38bdf8;
+    font-size: 23px;
+    margin-top: 0;
+}
+
+@media (max-width: 700px) {
+    #selected-lesson-content {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
     <div class="training-grid">
 
         <!-- TOPIC 1 -->
@@ -662,6 +786,54 @@
     <p>Cybersecurity Awareness and Training Application</p>
     <p>Developed as part of the COM6301 Development Project</p>
 </footer>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const panel = document.getElementById("selected-lesson");
+    const title = document.getElementById("selected-lesson-title");
+    const content = document.getElementById("selected-lesson-content");
+    const closeButton = document.getElementById("close-lesson");
 
+    document.querySelectorAll(".training-card").forEach(function (card) {
+        const details = card.querySelector(".training-details");
+        const summary = details.querySelector("summary");
+
+        summary.addEventListener("click", function (event) {
+            event.preventDefault();
+
+            const lessonTitle = card.querySelector("h2");
+            const lessonContent = card.querySelector(".training-lesson");
+
+            title.textContent = lessonTitle.textContent;
+            const sections = [];
+let currentSection = null;
+
+lessonContent.querySelectorAll("h3, p").forEach(function (element) {
+    if (element.tagName === "H3") {
+        currentSection = document.createElement("section");
+        currentSection.className = "lesson-section";
+        sections.push(currentSection);
+    }
+
+    if (currentSection) {
+        currentSection.appendChild(element.cloneNode(true));
+    }
+});
+
+content.replaceChildren(...sections);
+
+            panel.hidden = false;
+
+            panel.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        });
+    });
+
+    closeButton.addEventListener("click", function () {
+        panel.hidden = true;
+    });
+});
+</script>
 </body>
 </html>
